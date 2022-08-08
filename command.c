@@ -275,16 +275,17 @@ void pipeline_pop_front(pipeline self){ // Facu (Revisar)
  * Requires: self!=NULL && !pipeline_is_empty(self)
  */
 
-void pipeline_set_wait(pipeline self, const bool w); //Gaspi
-/*
- * Define si el pipeline tiene que esperar o no.
- *   self: pipeline que quiere ser establecido en su atributo de espera.
- * Requires: self!=NULL
- */
+void pipeline_set_wait(pipeline self, const bool w) {
+    assert(self != NULL);
+    self->wait = w;
+}
 
 /* Proyectores */
 
-bool pipeline_is_empty(const pipeline self); //Gaspi 
+bool pipeline_is_empty(const pipeline self) {
+    assert(self != NULL);
+    return (self->command_list = NULL);
+}
 /*
  * Indica si la secuencia de comandos simples tiene longitud 0.
  *   self: pipeline a decidir si está vacío.
