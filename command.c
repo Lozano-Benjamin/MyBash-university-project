@@ -233,6 +233,8 @@ pipeline pipeline_new(void){ //Benja
  *  && pipeline_get_wait(result)
  */
 
+
+
 pipeline pipeline_destroy(pipeline self){  //Benja
     assert(self != NULL);
     g_slist_free_full(self->command_list, free); //Libero cada scommand
@@ -284,7 +286,7 @@ void pipeline_set_wait(pipeline self, const bool w) {
 
 bool pipeline_is_empty(const pipeline self) {
     assert(self != NULL);
-    return (self->command_list = NULL);
+    return (self->command_list == NULL);
 }
 /*
  * Indica si la secuencia de comandos simples tiene longitud 0.
