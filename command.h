@@ -53,7 +53,7 @@ struct scommand {
 
 typedef struct scommand_s * scommand;
 
-typedef char *path_arg;
+typedef char * path_arg;
 
 scommand scommand_new(void);
 /*

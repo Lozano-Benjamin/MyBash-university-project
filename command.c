@@ -49,7 +49,7 @@ scommand scommand_destroy(scommand self){
 
     free(self->out);
     self->out = NULL;
-    
+
     free(self);
     self = NULL;
     return self;
@@ -57,7 +57,7 @@ scommand scommand_destroy(scommand self){
 
 /* Modificadores */
 
-void scommand_push_back(scommand self, char * argument);
+void scommand_push_back(scommand self, char * argument); //facu
 /*
  * Agrega por detrás una cadena a la secuencia de cadenas.
  *   self: comando simple al cual agregarle la cadena.
@@ -66,15 +66,17 @@ void scommand_push_back(scommand self, char * argument);
  * Ensures: !scommand_is_empty()
  */
 
-void scommand_pop_front(scommand self);
+
+
+void scommand_pop_front(scommand self); //ayala
 /*
  * Quita la cadena de adelante de la secuencia de cadenas.
  *   self: comando simple al cual sacarle la cadena del frente.
  * Requires: self!=NULL && !scommand_is_empty(self)
  */
 
-void scommand_set_redir_in(scommand self, char * filename);
-void scommand_set_redir_out(scommand self, char * filename);
+void scommand_set_redir_in(scommand self, char * filename); //gaston
+void scommand_set_redir_out(scommand self, char * filename);   //bonfils
 /*
  * Define la redirección de entrada (salida).
  *   self: comando simple al cual establecer la redirección de entrada (salida).
@@ -85,7 +87,7 @@ void scommand_set_redir_out(scommand self, char * filename);
 
 /* Proyectores */
 
-bool scommand_is_empty(const scommand self);
+bool scommand_is_empty(const scommand self); //fabro
 /*
  * Indica si la secuencia de cadenas tiene longitud 0.
  *   self: comando simple a decidir si está vacío.
@@ -93,7 +95,7 @@ bool scommand_is_empty(const scommand self);
  * Requires: self!=NULL
  */
 
-unsigned int scommand_length(const scommand self);
+unsigned int scommand_length(const scommand self); //sssj
 /*
  * Da la longitud de la secuencia cadenas que contiene el comando simple.
  *   self: comando simple a medir.
@@ -103,7 +105,7 @@ unsigned int scommand_length(const scommand self);
  *
  */
 
-char * scommand_front(const scommand self);
+char * scommand_front(const scommand self); //benja
 /*
  * Toma la cadena de adelante de la secuencia de cadenas.
  *   self: comando simple al cual tomarle la cadena del frente.
@@ -114,8 +116,8 @@ char * scommand_front(const scommand self);
  * Ensures: result!=NULL
  */
 
-char * scommand_get_redir_in(const scommand self);
-char * scommand_get_redir_out(const scommand self);
+char * scommand_get_redir_in(const scommand self); //benja de nueva
+char * scommand_get_redir_out(const scommand self); //benja otra vez
 /*
  * Obtiene los nombres de archivos a donde redirigir la entrada (salida).
  *   self: comando simple a decidir si está vacío.
@@ -156,7 +158,7 @@ char * scommand_to_string(const scommand self);
  *           ------------------------------
  */
 
-typedef struct pipeline_s * pipeline;
+
 
 pipeline pipeline_new(void);
 /*
