@@ -75,8 +75,14 @@ void scommand_pop_front(scommand self); //ayala
  * Requires: self!=NULL && !scommand_is_empty(self)
  */
 
-void scommand_set_redir_in(scommand self, char * filename); //gaston
-void scommand_set_redir_out(scommand self, char * filename);   //bonfils
+void scommand_set_redir_in(scommand self, char * filename) {
+    assert(self != NULL);
+    self->in = filename;
+}
+void scommand_set_redir_out(scommand self, char * filename) {
+    assert(self != NULL);
+    self->out = filename;
+}
 /*
  * Define la redirección de entrada (salida).
  *   self: comando simple al cual establecer la redirección de entrada (salida).
