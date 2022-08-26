@@ -53,6 +53,8 @@ struct scommand {
 
 typedef struct scommand_s * scommand;
 
+typedef char *command_arg;
+
 scommand scommand_new(void);
 /*
  * Nuevo `scommand', sin comandos o argumentos y los redirectores vacíos

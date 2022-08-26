@@ -8,8 +8,8 @@
 
 struct scommand_s {
     GSList* comm_args;
-    char* out;
-    char* in;
+    command_arg out;
+    command_arg in;
 };
 
 scommand scommand_new(void) {
@@ -32,4 +32,3 @@ scommand scommand_new(void) {
 
     return self;
 }
-
