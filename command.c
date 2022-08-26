@@ -32,6 +32,8 @@ scommand scommand_new(void) {
 
     return self;
 }
+<<<<<<< HEAD
+=======
 
 
 
@@ -39,3 +41,4 @@ scommand scommand_new(void) {
 
 
 
+>>>>>>> 7a81ee42191bb79a6efdf3eed7f201f5b0495cce
