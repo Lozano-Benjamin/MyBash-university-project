@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 #include "command.h"
-#include <glib.h>
+#include <glib-2.0/glib.h>
 
 
 struct scommand_s {
@@ -13,13 +13,6 @@ struct scommand_s {
 };
 
 scommand scommand_new(void) {
-/*
- * Nuevo `scommand', sin comandos o argumentos y los redirectores vacíos
- *   Returns: nuevo comando simple sin ninguna cadena y redirectores vacíos.
- * Ensures: result != NULL && scommand_is_empty (result) &&
- *  scommand_get_redir_in (result) == NULL &&
- *  scommand_get_redir_out (result) == NULL
- */
 
     scommand self = malloc(sizeof(struct scommand_s));
     self->comm_args = NULL;
@@ -35,12 +28,9 @@ scommand scommand_new(void) {
 
 
 scommand scommand_destroy(scommand self){
-/*
- * Destruye `self'.
- *   self: comando simple a destruir.
- * Requires: self != NULL
- * Ensures: result == NULL
- */
+
+    assert(self != NULL);
+
     g_slist_free_full(self->comm_args, free);
     self->comm_args = NULL;
 
@@ -52,6 +42,9 @@ scommand scommand_destroy(scommand self){
 
     free(self);
     self = NULL;
+
+    assert(self != NULL);
+
     return self;
 }
 
@@ -83,13 +76,6 @@ void scommand_set_redir_out(scommand self, char * filename) {
     assert(self != NULL);
     self->out = filename;
 }
-/*
- * Define la redirección de entrada (salida).
- *   self: comando simple al cual establecer la redirección de entrada (salida).
- *   filename: cadena con el nombre del archivo de la redirección
- *     o NULL si no se quiere redirección. El TAD se apropia de la referencia.
- * Requires: self!=NULL
- */
 
 /* Proyectores */
 
