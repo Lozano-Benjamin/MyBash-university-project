@@ -30,6 +30,27 @@
  * agrega dos accesores/modificadores para redirección de entrada y salida.
  */
 
+/*
+struct args{
+       arg *char;
+      next *args;
+}
+struct lista_de_scommand{
+    command *char
+    argum *args;
+}
+
+struct scommand {
+    comando *lista_de_scommand
+    out *char;
+    in *char;
+};
+
+[lista ['el comando', 'arg1', ..., 'argn'], out, in]
+
+
+*/
+
 typedef struct scommand_s * scommand;
 
 scommand scommand_new(void);

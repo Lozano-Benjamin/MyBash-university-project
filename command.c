@@ -2,7 +2,7 @@
 #include <glib.h>
 
 
-
+// hola gastoncito
 
 scommand scommand_new(void){
 
