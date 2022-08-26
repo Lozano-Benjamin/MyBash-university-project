@@ -15,3 +15,4 @@ scommand scommand_new(void) {
  *  scommand_get_redir_in (result) == NULL &&
  *  scommand_get_redir_out (result) == NULL
  */
+
