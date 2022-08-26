@@ -5,6 +5,13 @@
 #include "command.h"
 #include <glib.h>
 
+
+struct scommand_s {
+    GSList* comm_args;
+    char* out;
+    char* in;
+};
+
 scommand scommand_new(void) {
     return NULL;
 }
