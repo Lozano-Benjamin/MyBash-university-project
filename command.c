@@ -13,8 +13,6 @@ struct scommand_s {
 };
 
 scommand scommand_new(void) {
-    return NULL;
-}
 /*
  * Nuevo `scommand', sin comandos o argumentos y los redirectores vacíos
  *   Returns: nuevo comando simple sin ninguna cadena y redirectores vacíos.
@@ -22,4 +20,17 @@ scommand scommand_new(void) {
  *  scommand_get_redir_in (result) == NULL &&
  *  scommand_get_redir_out (result) == NULL
  */
+
+    scommand self = malloc(sizeof(struct scommand_s));
+    self->comm_args = NULL;
+    self->out = NULL;
+    self->in = NULL;
+
+    assert(self != NULL && scommand_is_empty (self) &&
+        scommand_get_redir_in (self) == NULL &&
+        scommand_get_redir_out (self) == NULL);
+
+    return self;
+}
+
 
