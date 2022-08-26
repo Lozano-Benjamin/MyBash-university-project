@@ -32,5 +32,3 @@ scommand scommand_new(void) {
 
     return self;
 }
-
-
