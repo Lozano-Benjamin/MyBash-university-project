@@ -79,7 +79,6 @@ void scommand_set_redir_out(scommand self, char * filename) {
 
 /* Proyectores */
 
-bool scommand_is_empty(const scommand self); //fabro
 /*
  * Indica si la secuencia de cadenas tiene longitud 0.
  *   self: comando simple a decidir si está vacío.
@@ -87,7 +86,11 @@ bool scommand_is_empty(const scommand self); //fabro
  * Requires: self!=NULL
  */
 
-unsigned int scommand_length(const scommand self); //sssj
+bool scommand_is_empty(const scommand self){ //fabro
+    assert (self !=NULL);
+    return g_slist_length(self) ==0;
+}
+
 /*
  * Da la longitud de la secuencia cadenas que contiene el comando simple.
  *   self: comando simple a medir.
@@ -96,6 +99,14 @@ unsigned int scommand_length(const scommand self); //sssj
  * Ensures: (scommand_length(self)==0) == scommand_is_empty()
  *
  */
+
+unsigned int scommand_length(const scommand self){ //sssj
+    assert (self !=NULL);
+    unsigned int length= g_slist_length(self);
+    return length;
+}
+
+
 
 char * scommand_front(const scommand self); //benja
 /*
