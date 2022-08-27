@@ -13,6 +13,12 @@ struct scommand_s {
     path_arg in;
 };
 
+struct pipeline_s {
+    scommand *command;
+    bool  wait;
+};
+
+
 scommand scommand_new(void) {
 
     scommand self = malloc(sizeof(struct scommand_s));
@@ -109,7 +115,13 @@ unsigned int scommand_length(const scommand self){ //sssj
 
 
 
-char * scommand_front(const scommand self); //benja
+char * scommand_front(const scommand self){ //benja (Incompleto)
+    assert(self != NULL && !scommand_is_empty(self));
+    char * result = NULL;
+    assert(result != NULL);
+
+    return result;
+} 
 /*
  * Toma la cadena de adelante de la secuencia de cadenas.
  *   self: comando simple al cual tomarle la cadena del frente.
@@ -120,8 +132,14 @@ char * scommand_front(const scommand self); //benja
  * Ensures: result!=NULL
  */
 
-char * scommand_get_redir_in(const scommand self); //benja de nueva
-char * scommand_get_redir_out(const scommand self); //benja otra vez
+char * scommand_get_redir_in(const scommand self){ //benja de nueva
+    assert(self != NULL);
+    return self->in;
+} 
+char * scommand_get_redir_out(const scommand self){ //benja otra vez
+    assert(self != NULL);
+    return self->out;
+}
 /*
  * Obtiene los nombres de archivos a donde redirigir la entrada (salida).
  *   self: comando simple a decidir si está vacío.
@@ -130,7 +148,7 @@ char * scommand_get_redir_out(const scommand self); //benja otra vez
  * Requires: self!=NULL
  */
 
-char * scommand_to_string(const scommand self);
+char * scommand_to_string(const scommand self); //Todos, o los que estemos.
 /* Preety printer para hacer debugging/logging.
  * Genera una representación del comando simple en un string (aka "serializar")
  *   self: comando simple a convertir.
@@ -164,7 +182,13 @@ char * scommand_to_string(const scommand self);
 
 
 
-pipeline pipeline_new(void);
+pipeline pipeline_new(void){ //Benja
+    pipeline result = malloc(sizeof(struct pipeline_s));
+    result->command = NULL;
+    result->wait = true;
+    assert(result != NULL  && pipeline_is_empty(result) && pipeline_get_wait( result));
+    return result;
+}
 /*
  * Nuevo `pipeline', sin comandos simples y establecido para que espere.
  *   Returns: nuevo pipeline sin comandos simples y que espera.
@@ -173,7 +197,17 @@ pipeline pipeline_new(void);
  *  && pipeline_get_wait(result)
  */
 
-pipeline pipeline_destroy(pipeline self);
+pipeline pipeline_destroy(pipeline self){  //Benja
+    assert(self != NULL);
+    unsigned int length = pipeline_length(self);
+    for (unsigned int i = 0; i < length; i++) {
+        self->command[i] = scommand_destroy(self->command[i]);
+    }
+    free(self->command);
+    self = NULL;
+    assert(self == NULL);
+    return self;
+}
 /*
  * Destruye `self'.
  *   self: tubería a a destruir.
@@ -183,7 +217,7 @@ pipeline pipeline_destroy(pipeline self);
 
 /* Modificadores */
 
-void pipeline_push_back(pipeline self, scommand sc);
+void pipeline_push_back(pipeline self, scommand sc); //Facu
 /*
  * Agrega por detrás un comando simple a la secuencia.
  *   self: pipeline al cual agregarle el comando simple.
@@ -192,7 +226,7 @@ void pipeline_push_back(pipeline self, scommand sc);
  * Ensures: !pipeline_is_empty()
  */
 
-void pipeline_pop_front(pipeline self);
+void pipeline_pop_front(pipeline self); // Facu
 /*
  * Quita el comando simple de adelante de la secuencia.
  *   self: pipeline al cual sacarle el comando simple del frente.
@@ -200,7 +234,7 @@ void pipeline_pop_front(pipeline self);
  * Requires: self!=NULL && !pipeline_is_empty(self)
  */
 
-void pipeline_set_wait(pipeline self, const bool w);
+void pipeline_set_wait(pipeline self, const bool w); // Gaston
 /*
  * Define si el pipeline tiene que esperar o no.
  *   self: pipeline que quiere ser establecido en su atributo de espera.
@@ -209,7 +243,7 @@ void pipeline_set_wait(pipeline self, const bool w);
 
 /* Proyectores */
 
-bool pipeline_is_empty(const pipeline self);
+bool pipeline_is_empty(const pipeline self); // Gaston
 /*
  * Indica si la secuencia de comandos simples tiene longitud 0.
  *   self: pipeline a decidir si está vacío.
@@ -217,7 +251,7 @@ bool pipeline_is_empty(const pipeline self);
  * Requires: self!=NULL
  */
 
-unsigned int pipeline_length(const pipeline self);
+unsigned int pipeline_length(const pipeline self); // Fabri
 /*
  * Da la longitud de la secuencia de comandos simples.
  *   self: pipeline a medir.
@@ -227,7 +261,7 @@ unsigned int pipeline_length(const pipeline self);
  *
  */
 
-scommand pipeline_front(const pipeline self);
+scommand pipeline_front(const pipeline self); // Fabri
 /*
  * Devuelve el comando simple de adelante de la secuencia.
  *   self: pipeline al cual consultar cual es el comando simple del frente.
@@ -239,7 +273,10 @@ scommand pipeline_front(const pipeline self);
  * Ensures: result!=NULL
  */
 
-bool pipeline_get_wait(const pipeline self);
+bool pipeline_get_wait(const pipeline self){ // Benja
+    assert( self != NULL);
+    return self->wait;
+}
 /*
  * Consulta si el pipeline tiene que esperar o no.
  *   self: pipeline a decidir si hay que esperar.
@@ -247,7 +284,7 @@ bool pipeline_get_wait(const pipeline self);
  * Requires: self!=NULL
  */
 
-char * pipeline_to_string(const pipeline self);
+char * pipeline_to_string(const pipeline self); //Todos, o los que estemos.
 /* Pretty printer para hacer debugging/logging.
  * Genera una representación del pipeline en una cadena (aka "serializar").
  *   self: pipeline a convertir.

@@ -55,6 +55,8 @@ typedef struct scommand_s * scommand;
 
 typedef char * path_arg;
 
+typedef struct pipeline_s * pipeline;
+
 scommand scommand_new(void);
 /*
  * Nuevo `scommand', sin comandos o argumentos y los redirectores vacíos
@@ -173,7 +175,6 @@ char * scommand_to_string(const scommand self);
  *           ------------------------------
  */
 
-typedef struct pipeline_s * pipeline;
 
 pipeline pipeline_new(void);
 /*
