@@ -109,17 +109,16 @@ bool scommand_is_empty(const scommand self){ //fabro
 
 unsigned int scommand_length(const scommand self){ //sssj
     assert (self !=NULL);
-    unsigned int length= g_slist_length(self);
+    unsigned int length= g_slist_length(self); 
     return length;
 }
 
 
 
-char * scommand_front(const scommand self){ //benja (Incompleto)
+char * scommand_front(const scommand self){ //benja 
     assert(self != NULL && !scommand_is_empty(self));
-    char * result = NULL;
-    assert(result != NULL);
-
+    char * result = g_slist_nth_data(self->comm_args, 0); //Encontre esta funcion, dice que devuelve el dato entonces creo que va bien. Si no,
+    assert(result != NULL);                                // g_slist_nth puede servir, habria que checkear.
     return result;
 } 
 /*
