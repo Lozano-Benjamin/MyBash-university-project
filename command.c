@@ -263,7 +263,15 @@ bool pipeline_is_empty(const pipeline self); // Gaston
  * Requires: self!=NULL
  */
 
-unsigned int pipeline_length(const pipeline self); // Fabri
+unsigned int pipeline_length(const pipeline self){ // Fabri
+    assert (self !=NULL);
+    unsigned int length=0;
+    for (unsigned int i=0; i < g_slist_length(self->command); ++i){
+        ++length;
+    }
+
+    return length;
+}
 /*
  * Da la longitud de la secuencia de comandos simples.
  *   self: pipeline a medir.
@@ -273,7 +281,10 @@ unsigned int pipeline_length(const pipeline self); // Fabri
  *
  */
 
-scommand pipeline_front(const pipeline self); // Fabri
+scommand pipeline_front(const pipeline self){ // Fabri
+    assert (self!=NULL && !pipeline_is_empty(self));
+    return g_slist_nth (self->command,0);
+}
 /*
  * Devuelve el comando simple de adelante de la secuencia.
  *   self: pipeline al cual consultar cual es el comando simple del frente.
