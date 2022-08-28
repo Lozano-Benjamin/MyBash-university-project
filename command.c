@@ -57,7 +57,11 @@ scommand scommand_destroy(scommand self){
 
 /* Modificadores */
 
-void scommand_push_back(scommand self, char * argument); //facu
+void scommand_push_back(scommand self, char * argument){ //ayala
+    assert(self != NULL && argument != NULL);
+    g_list_append(self->comm_args, argument);
+    assert(!scommand_is_empty(self));
+} 
 /*
  * Agrega por detrás una cadena a la secuencia de cadenas.
  *   self: comando simple al cual agregarle la cadena.
@@ -67,8 +71,10 @@ void scommand_push_back(scommand self, char * argument); //facu
  */
 
 
-
-void scommand_pop_front(scommand self); //ayala
+void scommand_pop_front(scommand self){     //ayala
+    assert(self != NULL && !scommand_is_empty(self));
+    g_list_remove(self->comm_args,g_slist_nth_data(self->comm_args, 0));
+}
 /*
  * Quita la cadena de adelante de la secuencia de cadenas.
  *   self: comando simple al cual sacarle la cadena del frente.
@@ -216,7 +222,11 @@ pipeline pipeline_destroy(pipeline self){  //Benja
 
 /* Modificadores */
 
-void pipeline_push_back(pipeline self, scommand sc); //Facu
+void pipeline_push_back(pipeline self, scommand sc){    //Facu
+    assert(self != NULL && sc != NULL);
+    g_list_append(self->command, sc);
+    assert(!pipeline_is_empty(self));
+}; 
 /*
  * Agrega por detrás un comando simple a la secuencia.
  *   self: pipeline al cual agregarle el comando simple.
@@ -225,7 +235,10 @@ void pipeline_push_back(pipeline self, scommand sc); //Facu
  * Ensures: !pipeline_is_empty()
  */
 
-void pipeline_pop_front(pipeline self); // Facu
+void pipeline_pop_front(pipeline self){
+    assert(self != NULL && !pipeline_is_empty(self));
+    g_list_remove(self->command, g_slist_nth_data(self->command, 0));
+} // Facu
 /*
  * Quita el comando simple de adelante de la secuencia.
  *   self: pipeline al cual sacarle el comando simple del frente.
