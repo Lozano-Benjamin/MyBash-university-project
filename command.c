@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
-
+#include <string.h>
 #include "command.h"
 #include <glib-2.0/glib.h>
 
 
 struct scommand_s {
-    GSList* comm_args;
-    char * out;
-    char * in;
+    GSList *comm_args;
+    char *out;
+    char *in;
 };
 
 struct pipeline_s {
@@ -153,7 +153,34 @@ char * scommand_get_redir_out(const scommand self){ //benja otra vez
  * Requires: self!=NULL
  */
 
-char * scommand_to_string(const scommand self); //Todos, o los que estemos.
+char * scommand_to_string(const scommand self){
+    assert(self!=NULL);
+    GSlist *tmp = NULL;
+    GSlist *tmp = self -> command;
+    char *res = strdup("");
+    if(tmp != NULL){
+        res = str_merge(res, tmp->data);
+        tmp = tmp -> next;
+        while(tmp != NULL){
+            res = str_merge(res, " ");
+            res = str_merge(res, tmp -> data);
+            tmp = tmp -> next;
+        }
+    }
+    if(self -> out != NULL){
+        res = str_merge(res, " > ");
+        res = str_merge(res, self -> out);
+    }
+
+    if(self -> in != NULL){
+        res = str_merge(res, " < ");
+        res = str_merge(res, self -> in);
+    }
+    assert(scommand_is_empty(self) || 
+            scommand_get_redir_in(self)==NULL || 
+            scommand_get_redir_out(self)==NULL || 
+            strlen(res) > 0)
+}
 /* Preety printer para hacer debugging/logging.
  * Genera una representación del comando simple en un string (aka "serializar")
  *   self: comando simple a convertir.
