@@ -53,7 +53,6 @@ struct scommand {
 
 typedef struct scommand_s * scommand;
 
-typedef char * path_arg;
 
 typedef struct pipeline_s * pipeline;
 

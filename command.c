@@ -9,12 +9,12 @@
 
 struct scommand_s {
     GSList* comm_args;
-    path_arg out;
-    path_arg in;
+    char * out;
+    char * in;
 };
 
 struct pipeline_s {
-    scommand *command;
+    GSList* command_list;
     bool  wait;
 };
 
@@ -99,7 +99,7 @@ void scommand_set_redir_out(scommand self, char * filename) {
  * Requires: self!=NULL
  */
 
-bool scommand_is_empty(const scommand self){ //fabro
+bool scommand_is_empty(const scommand self){ //fabro 
     assert (self !=NULL);
     return g_slist_length(self) ==0;
 }
@@ -113,7 +113,7 @@ bool scommand_is_empty(const scommand self){ //fabro
  *
  */
 
-unsigned int scommand_length(const scommand self){ //sssj
+unsigned int scommand_length(const scommand self){ //sssj (Poner ensures)
     assert (self !=NULL);
     unsigned int length= g_slist_length(self); 
     return length;
@@ -189,7 +189,7 @@ char * scommand_to_string(const scommand self); //Todos, o los que estemos.
 
 pipeline pipeline_new(void){ //Benja
     pipeline result = malloc(sizeof(struct pipeline_s));
-    result->command = NULL;
+    result->command_list = NULL;
     result->wait = true;
     assert(result != NULL  && pipeline_is_empty(result) && pipeline_get_wait( result));
     return result;
@@ -204,12 +204,7 @@ pipeline pipeline_new(void){ //Benja
 
 pipeline pipeline_destroy(pipeline self){  //Benja
     assert(self != NULL);
-    unsigned int length = pipeline_length(self);
-    for (unsigned int i = 0; i < length; i++) {
-        self->command[i] = scommand_destroy(self->command[i]);
-    }
-    free(self->command);
-    self = NULL;
+
     assert(self == NULL);
     return self;
 }
@@ -222,7 +217,7 @@ pipeline pipeline_destroy(pipeline self){  //Benja
 
 /* Modificadores */
 
-void pipeline_push_back(pipeline self, scommand sc){    //Facu
+void pipeline_push_back(pipeline self, scommand sc){    //Facu (Revisar)
     assert(self != NULL && sc != NULL);
     g_list_append(self->command, sc);
     assert(!pipeline_is_empty(self));
@@ -235,10 +230,10 @@ void pipeline_push_back(pipeline self, scommand sc){    //Facu
  * Ensures: !pipeline_is_empty()
  */
 
-void pipeline_pop_front(pipeline self){
+void pipeline_pop_front(pipeline self){ // Facu (Revisar)
     assert(self != NULL && !pipeline_is_empty(self));
     g_list_remove(self->command, g_slist_nth_data(self->command, 0));
-} // Facu
+}
 /*
  * Quita el comando simple de adelante de la secuencia.
  *   self: pipeline al cual sacarle el comando simple del frente.
@@ -263,13 +258,14 @@ bool pipeline_is_empty(const pipeline self); // Gaston
  * Requires: self!=NULL
  */
 
-unsigned int pipeline_length(const pipeline self){ // Fabri
+unsigned int pipeline_length(const pipeline self){ // Fabri (Revisar y poner Ensures)
     assert (self !=NULL);
     unsigned int length=0;
     for (unsigned int i=0; i < g_slist_length(self->command); ++i){
         ++length;
     }
 
+  
     return length;
 }
 /*
@@ -281,7 +277,7 @@ unsigned int pipeline_length(const pipeline self){ // Fabri
  *
  */
 
-scommand pipeline_front(const pipeline self){ // Fabri
+scommand pipeline_front(const pipeline self){ // Fabri (Revisar y poner Ensures)
     assert (self!=NULL && !pipeline_is_empty(self));
     return g_slist_nth (self->command,0);
 }
