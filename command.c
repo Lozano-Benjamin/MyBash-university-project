@@ -5,6 +5,7 @@
 #include <string.h> //Libreria para strings
 
 #include "command.h"
+#include "strextra.h"
 #include <glib-2.0/glib.h>
 #include <string.h>
 
@@ -316,16 +317,16 @@ char * pipeline_to_string(const pipeline self){ //Benja.
     if (command_list != NULL) {
 
         char *aux = scommand_to_string(g_list_nth_data(command_list,0u));
-        result = strcat(result,aux);
+        result = strmerge(result,aux);
 
         for (unsigned int i = 1u; i < pipeline_length(self); i++) {
-            result = strcat(result, " | ");
+            result = strmerge(result, " | ");
             aux = scommand_to_string(g_list_nth_data(command_list,i));
-            result = strcat(result, aux);
+            result = strmerge(result, aux);
         }
 
         if (!pipeline_get_wait(self)) {
-            result = strcat(result, "&");
+            result = strmerge(result, "&");
         }
     }
 
