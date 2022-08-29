@@ -298,7 +298,7 @@ unsigned int pipeline_length(const pipeline self){ // Fabri (Revisar y poner Ens
         ++length;
     }
 
-  
+    assert((pipeline_length(self)==0) == pipeline_is_empty(self));
     return length;
 }
 /*
@@ -312,7 +312,9 @@ unsigned int pipeline_length(const pipeline self){ // Fabri (Revisar y poner Ens
 
 scommand pipeline_front(const pipeline self){ // Fabri (Revisar y poner Ensures)
     assert (self!=NULL && !pipeline_is_empty(self));
-    return g_slist_nth (self->command_list,0);
+    scommand result = g_slist_nth (self->command_list,0);
+    assert(result!=NULL); 
+    return result;
 }
 /*
  * Devuelve el comando simple de adelante de la secuencia.
