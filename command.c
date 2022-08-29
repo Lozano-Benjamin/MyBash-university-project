@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
-#include <string.h>
+#include <string.h> //Libreria para strings
+
 #include "command.h"
+#include "strextra.h"
 #include <glib-2.0/glib.h>
+#include <string.h>
 
 
 struct scommand_s {
@@ -231,7 +234,10 @@ pipeline pipeline_new(void){ //Benja
 
 pipeline pipeline_destroy(pipeline self){  //Benja
     assert(self != NULL);
-
+    g_slist_free_full(self->command_list, free); //Libero cada scommand
+    self->command_list = NULL; //Setteo en NULL
+    free(self);     //Libero self
+    self = NULL;        //Setteo en NULL
     assert(self == NULL);
     return self;
 }
@@ -246,7 +252,7 @@ pipeline pipeline_destroy(pipeline self){  //Benja
 
 void pipeline_push_back(pipeline self, scommand sc){    //Facu (Revisar)
     assert(self != NULL && sc != NULL);
-    g_list_append(self->command, sc);
+    g_list_append(self->command_list, sc);
     assert(!pipeline_is_empty(self));
 }; 
 /*
@@ -259,7 +265,7 @@ void pipeline_push_back(pipeline self, scommand sc){    //Facu (Revisar)
 
 void pipeline_pop_front(pipeline self){ // Facu (Revisar)
     assert(self != NULL && !pipeline_is_empty(self));
-    g_list_remove(self->command, g_slist_nth_data(self->command, 0));
+    g_list_remove(self->command_list, g_slist_nth_data(self->command_list, 0));
 }
 /*
  * Quita el comando simple de adelante de la secuencia.
@@ -288,7 +294,7 @@ bool pipeline_is_empty(const pipeline self); // Gaston
 unsigned int pipeline_length(const pipeline self){ // Fabri (Revisar y poner Ensures)
     assert (self !=NULL);
     unsigned int length=0;
-    for (unsigned int i=0; i < g_slist_length(self->command); ++i){
+    for (unsigned int i=0; i < g_slist_length(self->command_list); ++i){
         ++length;
     }
 
@@ -306,7 +312,7 @@ unsigned int pipeline_length(const pipeline self){ // Fabri (Revisar y poner Ens
 
 scommand pipeline_front(const pipeline self){ // Fabri (Revisar y poner Ensures)
     assert (self!=NULL && !pipeline_is_empty(self));
-    return g_slist_nth (self->command,0);
+    return g_slist_nth (self->command_list,0);
 }
 /*
  * Devuelve el comando simple de adelante de la secuencia.
@@ -330,7 +336,32 @@ bool pipeline_get_wait(const pipeline self){ // Benja
  * Requires: self!=NULL
  */
 
-char * pipeline_to_string(const pipeline self); //Todos, o los que estemos.
+char * pipeline_to_string(const pipeline self){ //Benja.
+    assert(self != NULL);
+    GList* command_list = self->command_list ;
+    char *result = strdup(""); //Esta funcion lo que hace es inicializa y duplica un string.
+
+    if (command_list != NULL) {
+
+        char *aux = scommand_to_string(g_list_nth_data(command_list,0u));
+        result = strmerge(result,aux);
+
+        for (unsigned int i = 1u; i < pipeline_length(self); i++) {
+            result = strmerge(result, " | ");
+            aux = scommand_to_string(g_list_nth_data(command_list,i));
+            result = strmerge(result, aux);
+        }
+
+        if (!pipeline_get_wait(self)) {
+            result = strmerge(result, "&");
+        }
+    }
+
+
+    assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result) > 0);
+
+    return result;
+} 
 /* Pretty printer para hacer debugging/logging.
  * Genera una representación del pipeline en una cadena (aka "serializar").
  *   self: pipeline a convertir.
