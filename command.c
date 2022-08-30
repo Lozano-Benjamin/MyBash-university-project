@@ -284,7 +284,7 @@ void pipeline_set_wait(pipeline self, const bool w) {
 
 bool pipeline_is_empty(const pipeline self) {
     assert(self != NULL);
-    return (self->command_list = NULL);
+    return (self->command_list == NULL);
 }
 /*
  * Indica si la secuencia de comandos simples tiene longitud 0.
