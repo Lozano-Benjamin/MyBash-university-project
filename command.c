@@ -53,7 +53,7 @@ scommand scommand_destroy(scommand self){
     free(self);
     self = NULL;
 
-    assert(self != NULL);
+    assert(self == NULL);
 
     return self;
 }
@@ -62,7 +62,7 @@ scommand scommand_destroy(scommand self){
 
 void scommand_push_back(scommand self, char * argument){ //ayala
     assert(self != NULL && argument != NULL);
-    g_list_append(self->comm_args, argument);
+    self -> comm_args = g_slist_append(self->comm_args, argument);
     assert(!scommand_is_empty(self));
 } 
 /*
@@ -76,7 +76,7 @@ void scommand_push_back(scommand self, char * argument){ //ayala
 
 void scommand_pop_front(scommand self){     //ayala
     assert(self != NULL && !scommand_is_empty(self));
-    g_list_remove(self->comm_args,g_slist_nth_data(self->comm_args, 0));
+    self -> comm_args = g_slist_remove(self->comm_args,g_slist_nth_data(self->comm_args, 0));
 }
 /*
  * Quita la cadena de adelante de la secuencia de cadenas.
@@ -104,7 +104,7 @@ void scommand_set_redir_out(scommand self, char * filename) {
 
 bool scommand_is_empty(const scommand self){ //fabro 
     assert (self !=NULL);
-    return g_slist_length(self) ==0;
+    return (g_slist_length(self->comm_args) == 0);
 }
 
 /*
@@ -118,7 +118,7 @@ bool scommand_is_empty(const scommand self){ //fabro
 
 unsigned int scommand_length(const scommand self){ //sssj (Poner ensures)
     assert (self !=NULL);
-    unsigned int length= g_slist_length(self); 
+    unsigned int length= g_slist_length(self->comm_args);
     return length;
 }
 
@@ -158,32 +158,33 @@ char * scommand_get_redir_out(const scommand self){ //benja otra vez
 
 char * scommand_to_string(const scommand self){
     assert(self!=NULL);
-    GSlist *tmp = NULL;
-    GSlist *tmp = self -> command;
+    GSList *tmp = NULL;
+    tmp = self -> comm_args;
     char *res = strdup("");
     if(tmp != NULL){
-        res = str_merge(res, tmp->data);
+        res = strmerge(res, tmp->data);
         tmp = tmp -> next;
         while(tmp != NULL){
-            res = str_merge(res, " ");
-            res = str_merge(res, tmp -> data);
+            res = strmerge(res, " ");
+            res = strmerge(res, tmp -> data);
             tmp = tmp -> next;
         }
     }
     if(self -> out != NULL){
-        res = str_merge(res, " > ");
-        res = str_merge(res, self -> out);
+        res = strmerge(res, " > ");
+        res = strmerge(res, self -> out);
     }
 
     if(self -> in != NULL){
-        res = str_merge(res, " < ");
-        res = str_merge(res, self -> in);
+        res = strmerge(res, " < ");
+        res = strmerge(res, self -> in);
     }
-    assert(scommand_is_empty(self) || 
-            scommand_get_redir_in(self)==NULL || 
-            scommand_get_redir_out(self)==NULL || 
-            strlen(res) > 0)
+    assert(scommand_is_empty(self) || scommand_get_redir_in(self)==NULL || scommand_get_redir_out(self)==NULL || strlen(res) > 0);
+    return res;
 }
+
+
+
 /* Preety printer para hacer debugging/logging.
  * Genera una representación del comando simple en un string (aka "serializar")
  *   self: comando simple a convertir.
@@ -252,9 +253,9 @@ pipeline pipeline_destroy(pipeline self){  //Benja
 
 void pipeline_push_back(pipeline self, scommand sc){    //Facu (Revisar)
     assert(self != NULL && sc != NULL);
-    g_list_append(self->command_list, sc);
+    self -> command_list = g_slist_append(self->command_list, sc);
     assert(!pipeline_is_empty(self));
-}; 
+}
 /*
  * Agrega por detrás un comando simple a la secuencia.
  *   self: pipeline al cual agregarle el comando simple.
@@ -265,7 +266,7 @@ void pipeline_push_back(pipeline self, scommand sc){    //Facu (Revisar)
 
 void pipeline_pop_front(pipeline self){ // Facu (Revisar)
     assert(self != NULL && !pipeline_is_empty(self));
-    g_list_remove(self->command_list, g_slist_nth_data(self->command_list, 0));
+    self -> command_list = g_slist_remove(self->command_list, g_slist_nth_data(self->command_list, 0));
 }
 /*
  * Quita el comando simple de adelante de la secuencia.
@@ -274,7 +275,7 @@ void pipeline_pop_front(pipeline self){ // Facu (Revisar)
  * Requires: self!=NULL && !pipeline_is_empty(self)
  */
 
-void pipeline_set_wait(pipeline self, const bool w); // Gaston
+void pipeline_set_wait(pipeline self, const bool w); //Gaspi
 /*
  * Define si el pipeline tiene que esperar o no.
  *   self: pipeline que quiere ser establecido en su atributo de espera.
@@ -283,7 +284,7 @@ void pipeline_set_wait(pipeline self, const bool w); // Gaston
 
 /* Proyectores */
 
-bool pipeline_is_empty(const pipeline self); // Gaston
+bool pipeline_is_empty(const pipeline self); //Gaspi 
 /*
  * Indica si la secuencia de comandos simples tiene longitud 0.
  *   self: pipeline a decidir si está vacío.
@@ -298,7 +299,7 @@ unsigned int pipeline_length(const pipeline self){ // Fabri (Revisar y poner Ens
         ++length;
     }
 
-    assert((pipeline_length(self)==0) == pipeline_is_empty(self));
+    assert((length==0) == pipeline_is_empty(self));
     return length;
 }
 /*
@@ -312,7 +313,7 @@ unsigned int pipeline_length(const pipeline self){ // Fabri (Revisar y poner Ens
 
 scommand pipeline_front(const pipeline self){ // Fabri (Revisar y poner Ensures)
     assert (self!=NULL && !pipeline_is_empty(self));
-    scommand result = g_slist_nth (self->command_list,0);
+    scommand result = g_slist_nth_data(self->command_list,0);
     assert(result!=NULL); 
     return result;
 }
@@ -340,17 +341,17 @@ bool pipeline_get_wait(const pipeline self){ // Benja
 
 char * pipeline_to_string(const pipeline self){ //Benja.
     assert(self != NULL);
-    GList* command_list = self->command_list ;
+    GSList* command_list = self->command_list ;
     char *result = strdup(""); //Esta funcion lo que hace es inicializa y duplica un string.
 
     if (command_list != NULL) {
 
-        char *aux = scommand_to_string(g_list_nth_data(command_list,0u));
+        char *aux = scommand_to_string(g_slist_nth_data(command_list,0u));
         result = strmerge(result,aux);
 
         for (unsigned int i = 1u; i < pipeline_length(self); i++) {
             result = strmerge(result, " | ");
-            aux = scommand_to_string(g_list_nth_data(command_list,i));
+            aux = scommand_to_string(g_slist_nth_data(command_list,i));
             result = strmerge(result, aux);
         }
 
