@@ -1,9 +1,11 @@
-#ifndef _BUILTIN_H_
-#define _BUILTIN_H_
-
 #include <stdbool.h>
 
 #include "command.h"
+
+//librerias para que ande las syscalls
+#include <unistd.h> 
+#include <sys/syscall.h>
+#include <sys/types.h>
 
 bool builtin_is_internal(scommand cmd);
 /*
@@ -37,5 +39,11 @@ void builtin_run(scommand cmd);
  *
  */
 
-#endif
 
+/*
+Para el cd son tres casos (pues lo complicado lo maneja la syscall)
+ver si los argumentos estan de mas (error)
+ver si el path es correcto (ver si retorna error y printear)
+andar normalito (aca todo lo complicado lo maneja la syscall)
+
+*/
