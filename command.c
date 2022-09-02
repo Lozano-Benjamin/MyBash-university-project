@@ -1,3 +1,4 @@
+#include <endian.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -376,3 +377,4 @@ char * pipeline_to_string(const pipeline self){ //Benja.
  * Requires: self!=NULL
  * Ensures: pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result)>0
  */
+
