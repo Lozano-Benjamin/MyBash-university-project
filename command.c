@@ -41,7 +41,7 @@ scommand scommand_destroy(scommand self){
 
     assert(self != NULL);
 
-    g_slist_free_full(self->comm_args, free);
+    g_slist_free_full(self->comm_args, free); //usar pop
     self->comm_args = NULL;
 
     free(self->in);
@@ -166,8 +166,8 @@ char * scommand_to_string(const scommand self){
         tmp = tmp -> next;
         while(tmp != NULL){
             res = strmerge(res, " ");
-            res = strmerge(res, tmp -> data);
-            tmp = tmp -> next;
+            res = strmerge(res, tmp -> data); // usar puntero aux que apunte a res para que no qeuuede colgando
+            tmp = tmp -> next; // usar libreria glib
         }
     }
     if(self -> out != NULL){
