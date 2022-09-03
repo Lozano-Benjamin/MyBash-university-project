@@ -49,7 +49,13 @@ static void run_exit() {
 
 }
 
-bool builtin_is_internal(scommand cmd);
+bool builtin_is_internal(scommand cmd) {
+    assert(cmd != NULL);
+    bool is_cd = scommand_front(cmd) == "cd";
+    bool is_help = scommand_front(cmd) == "help";
+    bool is_exit = scommand_front(cmd) == "exit";
+    return is_cd || is_help || is_exit;
+}
 /*
  * Indica si el comando alojado en `cmd` es un comando interno
  *
@@ -58,7 +64,7 @@ bool builtin_is_internal(scommand cmd);
  */
 
 
-bool builtin_alone(pipeline p);
+bool builtin_alone(pipeline p) {}
 /*
  * Indica si el pipeline tiene solo un elemento y si este se corresponde a un
  * comando interno.
