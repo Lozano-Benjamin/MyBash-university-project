@@ -1,12 +1,27 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "parsing.h"
 #include "parser.h"
 #include "command.h"
 
 static scommand parse_scommand(Parser p) {
-    /* Devuelve NULL cuando hay un error de parseo */
+    scommand new_command = scommand_new();
+    arg_kind_t type = ARG_NORMAL;
+    char *aux = parser_next_argument(p, &type);
+    while (type == ARG_NORMAL) {
+        scommand_push_back(new_command, aux);
+        aux = parser_next_argument(p, &type);
+    }
+    if (type == ARG_INPUT) {
+        scommand_set_redir_in(new_command, aux);
+        aux = parser_next_argument(p, &type);
+    }
+    if (type == ARG_OUTPUT) {
+        scommand_set_redir_out(new_command, aux);
+        aux = parser_next_argument(p, &type);
+    }
     return NULL;
 }
 
