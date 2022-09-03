@@ -1,0 +1,5 @@
+builtin.o: builtin.c command.h
+command.o: command.c command.h strextra.h
+mybash.o: mybash.c command.h execute.h parser.h parsing.h builtin.h
+parsing.o: parsing.c parsing.h command.h parser.h
+strextra.o: strextra.c strextra.h
