@@ -40,9 +40,6 @@ ademas, cd (a secas) te manda a home
 }
 
 
-static void run_help() {
-
-
 static void run_help(scommand cmd) {
     printf ("Ayuda para el help");
 
