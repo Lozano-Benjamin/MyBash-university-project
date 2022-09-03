@@ -11,7 +11,7 @@ Ejecuta cd xd
 */
 static void run_help(scommand cmd);
 
-static void run_exit();
+static void run_exit(scommand cmd);
 
 }
 bool builtin_is_internal(scommand cmd);

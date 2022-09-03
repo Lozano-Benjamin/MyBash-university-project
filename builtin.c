@@ -1,5 +1,5 @@
 
-
+#include <assert.h>
 #include <stdbool.h>
 
 #include "command.h"
@@ -21,14 +21,14 @@ ademas, cd (a secas) te manda a home
 */
     unsigned int n = scommand_length(cmd);
     if (n > 2) {    //cd algo basura
-        printf('Muchos argumentos\n');
+        printf("Muchos argumentos\n");
     }
     else if (n == 2) { //cd path
         scommand_pop_front(cmd);
         char* path = scommand_front(cmd);
         int err = syscall(SYS_chdir, path);
         if (err != 0) {
-            printf('pucha, no se encontró el directorio\n');
+            printf("pucha, no se encontró el directorio\n");
         }
     }
     else if (n == 1) { //cd (a secas, te salta a home)
@@ -45,7 +45,7 @@ static void run_help(scommand cmd) {
 
 }
 
-static void run_exit() {
+static void run_exit(scommand cmd) {
 
 }
 
