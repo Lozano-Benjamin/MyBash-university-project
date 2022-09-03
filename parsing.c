@@ -10,9 +10,14 @@ static scommand parse_scommand(Parser p) {
     scommand new_command = scommand_new();
     arg_kind_t type = ARG_NORMAL;
     char *aux = parser_next_argument(p, &type);
-    while (type == ARG_NORMAL) {
+    bool flag = false;
+    while (type == ARG_NORMAL && !parser_at_eof(p)) {
         scommand_push_back(new_command, aux);
         aux = parser_next_argument(p, &type);
+        if (aux == ""){
+            flag = true;
+            break;
+        }
     }
     if (type == ARG_INPUT) {
         scommand_set_redir_in(new_command, aux);
@@ -22,7 +27,10 @@ static scommand parse_scommand(Parser p) {
         scommand_set_redir_out(new_command, aux);
         aux = parser_next_argument(p, &type);
     }
-    return NULL;
+    if(flag){
+        new_command = scommand_destroy(new_command);
+    }
+    return new_command;
 }
 
 pipeline parse_pipeline(Parser p) {
