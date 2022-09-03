@@ -1,5 +1,4 @@
-#ifndef _BUILTIN_H_
-#define _BUILTIN_H_
+
 
 #include <stdbool.h>
 
@@ -37,5 +36,5 @@ void builtin_run(scommand cmd);
  *
  */
 
-#endif
+
 
