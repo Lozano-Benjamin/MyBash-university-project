@@ -39,7 +39,12 @@ ademas, cd (a secas) te manda a home
     }
 }
 
+
 static void run_help() {
+
+
+static void run_help(scommand cmd) {
+    printf ("Ayuda para el help");
 
 }
 
@@ -71,7 +76,18 @@ bool builtin_alone(pipeline p);
  *
  */
 
-void builtin_run(scommand cmd);
+void builtin_run(scommand cmd){
+    if (scommand_front(cmd) == "cd"){
+        run_cd(cmd);
+    }
+    else if (scommand_front(cmd) == "help"){
+        run_help(cmd);
+    }
+    else if (scommand_front(cmd) == "exit"){
+        run_exit(cmd);
+    }
+
+}
 /*
  * Ejecuta un comando interno
  *
