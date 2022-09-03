@@ -9,7 +9,11 @@ static void run_cd(scommand cmd);
 /*
 Ejecuta cd xd
 */
+static void run_help(scommand cmd);
 
+static void run_exit();
+
+}
 bool builtin_is_internal(scommand cmd);
 /*
  * Indica si el comando alojado en `cmd` es un comando interno
