@@ -11,22 +11,40 @@
 
 static void run_cd(scommand cmd) {
     //cd home/aqui
-    
-    scommand_pop_front(cmd);
-    char* path = scommand_front(cmd);
-    int err = syscall(SYS_chdir, path);
-    if (err != 0) {
-        printf('pucha');
-        //return 1;
+/*
+Para el cd son tres casos (pues lo complicado lo maneja la syscall)
+ver si los argumentos estan de mas (error)
+ver si el path es correcto (ver si retorna error y printear)
+andar normalito (aca todo lo complicado lo maneja la syscall)
+ademas, cd (a secas) te manda a home
+
+*/
+    unsigned int n = scommand_length(cmd);
+    if (n > 2) {    //cd algo basura
+        printf('Muchos argumentos\n');
+    }
+    else if (n == 2) { //cd path
+        scommand_pop_front(cmd);
+        char* path = scommand_front(cmd);
+        int err = syscall(SYS_chdir, path);
+        if (err != 0) {
+            printf('pucha, no se encontró el directorio\n');
+        }
+    }
+    else if (n == 1) { //cd (a secas, te salta a home)
+        int err = syscall(SYS_chdir, "./home");
+        if (err != 0) {
+            printf("No se como esto dio un error");
+        }
     }
 }
 
-static void run_help(scommand cmd) {
+static void run_help() {
 
 }
 
-static void run_exit(scommand cmd) {
-    
+static void run_exit() {
+
 }
 
 bool builtin_is_internal(scommand cmd);
@@ -62,18 +80,12 @@ void builtin_run(scommand cmd);
  * 
  * 
  * La forma de esto seria algo como
- * if == cd {run_cd}
- * if == exit {run_exit}
+ * if == front(cd) 
+ *  {run_cd}
+ * if == front(exit)
+ *  {run_exit}
  * .....
  */
 
 
 
-/*
-Para el cd son tres casos (pues lo complicado lo maneja la syscall)
-ver si los argumentos estan de mas (error)
-ver si el path es correcto (ver si retorna error y printear)
-andar normalito (aca todo lo complicado lo maneja la syscall)
-ademas, cd (a secas) te manda a home
-
-*/
