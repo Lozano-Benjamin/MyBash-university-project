@@ -1,3 +1,4 @@
+#include <endian.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -41,7 +42,7 @@ scommand scommand_destroy(scommand self){
 
     assert(self != NULL);
 
-    g_slist_free_full(self->comm_args, free);
+    g_slist_free_full(self->comm_args, free); //usar pop
     self->comm_args = NULL;
 
     free(self->in);
@@ -166,8 +167,8 @@ char * scommand_to_string(const scommand self){
         tmp = tmp -> next;
         while(tmp != NULL){
             res = strmerge(res, " ");
-            res = strmerge(res, tmp -> data);
-            tmp = tmp -> next;
+            res = strmerge(res, tmp -> data); // usar puntero aux que apunte a res para que no qeuuede colgando
+            tmp = tmp -> next; // usar libreria glib
         }
     }
     if(self -> out != NULL){
@@ -232,6 +233,8 @@ pipeline pipeline_new(void){ //Benja
  *  && pipeline_is_empty(result)
  *  && pipeline_get_wait(result)
  */
+
+
 
 pipeline pipeline_destroy(pipeline self){  //Benja
     assert(self != NULL);
@@ -374,3 +377,4 @@ char * pipeline_to_string(const pipeline self){ //Benja.
  * Requires: self!=NULL
  * Ensures: pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result)>0
  */
+

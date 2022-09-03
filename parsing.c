@@ -24,7 +24,7 @@ pipeline parse_pipeline(Parser p) {
          */
     }
     /* Opcionalmente un OP_BACKGROUND al final */
-    }
+    
     /*
      *
      * COMPLETAR
