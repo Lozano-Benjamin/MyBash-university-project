@@ -2,7 +2,6 @@
 # "make test" EN EL DIRECTORIO DE ARRIBA, no en este.
 CPPFLAGS+= -I..
 LDFLAGS+= `pkg-config --libs check`
-GLIB = -lglib-2.0
 
 TARGETS=runner runner-command runner-parsing leaktest
 SOURCES=$(shell echo *.c)
@@ -23,16 +22,16 @@ builtin.o: CPPFLAGS += -DREPLACE_SYSCALLS=1
 # - Los runners usan la implementacion de referencia
 #   de los modulos que no estan bajo prueba
 runner: run_tests.o test_scommand.o test_pipeline.o test_execute.o test_parsing.o $(COMMON_OBJECTS) $(PARSER_OBJECTS) $(MOCK_OBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS) $(GLIB) 
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 runner-command: run_command.o test_scommand.o test_pipeline.o $(COMMON_OBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS) $(GLIB) 
+	$(CC) -o $@ $^ $(LDFLAGS)
 
-runner-parsing: run_parser.o test_parsing.o $(COMMON_OBJECTS) $(PARSER_OBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS) $(GLIB) 
+runner-parsing: run_parsing.o test_parsing.o $(COMMON_OBJECTS) $(PARSER_OBJECTS)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 leaktest: leaktest.o test_scommand.o test_pipeline.o $(COMMON_OBJECTS) $(PARSER_OBJECTS)
-	$(CC) -o $@ $^ $(LDFLAGS) $(GLIB) 
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 
 # Cada runner usa partes distintas de run_tests.c
