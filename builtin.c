@@ -65,15 +65,10 @@ bool builtin_is_internal(scommand cmd) {
 
 
 bool builtin_alone(pipeline p){
-    bool  b = pipeline_length(p) ==  1;
-    if ( scommand_front(p)== "cd" ||  scommand_front(p)== "exit" || scommand_front(p)== "exit"){
-        b= b && true;
-    }
-    else{
-        b= false;
-    }
-
-    return b; 
+    assert(p!=NULL);
+    bool  is_alone = pipeline_length(p) ==  1 && builtin_is_internal(pipeline_front(p));
+    
+    return is_alone; 
 }
 /*
  * Indica si el pipeline tiene solo un elemento y si este se corresponde a un
