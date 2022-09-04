@@ -65,7 +65,9 @@ bool builtin_is_internal(scommand cmd) {
 
 
 bool builtin_alone(pipeline p){
-    bool  is_alone = pipeline_length(p) ==  1 && pipeline_front(p);
+    assert(p!=NULL);
+    bool  is_alone = pipeline_length(p) ==  1 && builtin_is_internal(pipeline_front(p));
+    
     return is_alone; 
 }
 /*
