@@ -10,7 +10,7 @@
 #include <sys/types.h>
 
 static void run_cd(scommand cmd) {
-    //cd home/aqui
+    
 /*
 Para el cd son tres casos (pues lo complicado lo maneja la syscall)
 ver si los argumentos estan de mas (error)
@@ -20,7 +20,7 @@ ademas, cd (a secas) te manda a home
 
 */
     unsigned int n = scommand_length(cmd);
-    if (n > 2) {    //cd algo basura
+    if (n > 2) {    //cd algo/algo basura
         printf("Muchos argumentos\n");
     }
     else if (n == 2) { //cd path

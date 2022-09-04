@@ -13,7 +13,7 @@ static void run_help(scommand cmd);
 
 static void run_exit(scommand cmd);
 
-}
+
 bool builtin_is_internal(scommand cmd);
 /*
  * Indica si el comando alojado en `cmd` es un comando interno
