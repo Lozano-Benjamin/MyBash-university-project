@@ -21,10 +21,17 @@ static scommand parse_scommand(Parser p) {
         }
     }
     if (type == ARG_INPUT) {
+        if (aux == NULL) {
+            flag = true;
+        }
         scommand_set_redir_in(new_command, aux);
         aux = parser_next_argument(p, &type);
-        }
+
+    }
     if (type == ARG_OUTPUT) {
+        if (aux == NULL) {
+            flag = true;
+        }
         scommand_set_redir_out(new_command, aux);
         aux = parser_next_argument(p, &type);
         } 
@@ -34,7 +41,8 @@ static scommand parse_scommand(Parser p) {
     }
 
     return new_command; 
-}   
+}     
+
 
 pipeline parse_pipeline(Parser p) {
     pipeline result = pipeline_new();
