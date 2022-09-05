@@ -10,7 +10,7 @@
 #include <sys/types.h>
 
 static void run_cd(scommand cmd) {
-    
+
 /*
 Para el cd son tres casos (pues lo complicado lo maneja la syscall)
 ver si los argumentos estan de mas (error)
@@ -46,7 +46,7 @@ static void run_help(scommand cmd) {
 }
 
 static void run_exit(scommand cmd) {
-
+    //TODO (NI IDEA COMO SE HACE HERMANO QUE ES ESTO)
 }
 
 bool builtin_is_internal(scommand cmd) {
@@ -66,7 +66,7 @@ bool builtin_is_internal(scommand cmd) {
 
 bool builtin_alone(pipeline p){
     assert(p!=NULL);
-    bool  is_alone = pipeline_length(p) ==  1 && builtin_is_internal(pipeline_front(p));
+    bool is_alone = pipeline_length(p) == 1 && builtin_is_internal(pipeline_front(p));
     
     return is_alone; 
 }
@@ -85,6 +85,7 @@ bool builtin_alone(pipeline p){
  */
 
 void builtin_run(scommand cmd){
+    assert(builtin_is_internal(cmd));
     if (scommand_front(cmd) == "cd"){
         run_cd(cmd);
     }
