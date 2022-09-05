@@ -11,30 +11,34 @@ static scommand parse_scommand(Parser p) {
     arg_kind_t type = ARG_NORMAL;
     char *aux = parser_next_argument(p, &type);
    bool flag = false; 
-    while (type == ARG_NORMAL && !parser_at_eof(p) && aux != NULL) {
-        scommand_push_back(new_command, aux);
-        aux = parser_next_argument(p, &type);
-    
-        if (aux == NULL && type != ARG_NORMAL){
-            flag = true;
-            break;
+    while ( !parser_at_eof(p) && aux != NULL) {
+
+        if (type == ARG_NORMAL) {
+            if (aux == NULL) {
+                flag = true;
+            }
+            scommand_push_back(new_command, aux);
+            aux = parser_next_argument(p, &type);
         }
-    }
-    if (type == ARG_INPUT) {
-        if (aux == NULL) {
-            flag = true;
+
+        if (type == ARG_INPUT ) {
+            if (aux == NULL) {
+                flag = true;
+            }
+            scommand_set_redir_in(new_command, aux);
+            aux = parser_next_argument(p, &type);
         }
-        scommand_set_redir_in(new_command, aux);
-        aux = parser_next_argument(p, &type);
+
+        if (type == ARG_OUTPUT) {
+            if (aux == NULL) {
+                flag = true;
+            }
+            scommand_set_redir_out(new_command, aux);
+            aux = parser_next_argument(p, &type);
+        } 
 
     }
-    if (type == ARG_OUTPUT) {
-        if (aux == NULL) {
-            flag = true;
-        }
-        scommand_set_redir_out(new_command, aux);
-        aux = parser_next_argument(p, &type);
-        } 
+
     if (flag) {
         new_command = scommand_destroy(new_command);
         new_command = NULL;
@@ -44,10 +48,11 @@ static scommand parse_scommand(Parser p) {
 }     
 
 
+
 pipeline parse_pipeline(Parser p) {
     pipeline result = pipeline_new();
     scommand cmd = NULL;
-    bool error = false, another_pipe=true;
+    bool error = false, another_pipe=true, background_status = false;
     cmd = parse_scommand(p); //
     error = (cmd==NULL); /* Comando inválido al empezar */
     while (another_pipe && !error) {    
@@ -56,19 +61,16 @@ pipeline parse_pipeline(Parser p) {
         if(another_pipe){
             cmd = parse_scommand(p);
         }
+        error = (cmd == NULL);
     }
-    /* Opcionalmente un OP_BACKGROUND al final */
+    parser_op_background(p,&background_status);
+    if (background_status) {
+        pipeline_set_wait(result, false); 
+    }
+    if (error) {
+        result = pipeline_destroy(result);
+        result = NULL;
+    }
     
-    /*
-     *
-     * COMPLETAR
-     *
-     */
-
-    /* Tolerancia a espacios posteriores */
-    /* Consumir todo lo que hay inclusive el \n */
-    /* Si hubo error, hacemos cleanup */
-
-    return NULL; // MODIFICAR
+    return result; 
 }
-
