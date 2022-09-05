@@ -10,28 +10,31 @@ static scommand parse_scommand(Parser p) {
     scommand new_command = scommand_new();
     arg_kind_t type = ARG_NORMAL;
     char *aux = parser_next_argument(p, &type);
-/*     bool flag = false; */
+   bool flag = false; 
     while (type == ARG_NORMAL && !parser_at_eof(p) && aux != NULL) {
         scommand_push_back(new_command, aux);
         aux = parser_next_argument(p, &type);
-/*         if (aux == ""){
+    
+        if (aux == NULL && type != ARG_NORMAL){
             flag = true;
             break;
-        } */
+        }
     }
     if (type == ARG_INPUT) {
         scommand_set_redir_in(new_command, aux);
         aux = parser_next_argument(p, &type);
-    }
+        }
     if (type == ARG_OUTPUT) {
         scommand_set_redir_out(new_command, aux);
         aux = parser_next_argument(p, &type);
-    }
-/*     if(flag){
+        } 
+    if (flag) {
         new_command = scommand_destroy(new_command);
-    } */
-    return new_command;
-}
+        new_command = NULL;
+    }
+
+    return new_command; 
+}   
 
 pipeline parse_pipeline(Parser p) {
     pipeline result = pipeline_new();
