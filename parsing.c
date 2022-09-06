@@ -11,6 +11,7 @@ static scommand parse_scommand(Parser p) {
     arg_kind_t type = ARG_NORMAL;
     char *aux = parser_next_argument(p, &type);
    bool flag = false; 
+   parser_skip_blanks(p);
     while ( !parser_at_eof(p) && aux != NULL) {
 
         if (type == ARG_NORMAL) {
@@ -39,7 +40,7 @@ static scommand parse_scommand(Parser p) {
 
     }
 
-    if (flag) {
+    if (flag || scommand_is_empty(new_command)) {
         new_command = scommand_destroy(new_command);
         new_command = NULL;
     }
