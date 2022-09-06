@@ -10,32 +10,30 @@ static scommand parse_scommand(Parser p) {
     scommand new_command = scommand_new();
     arg_kind_t type = ARG_NORMAL;
     char *aux = parser_next_argument(p, &type);
-   bool flag = false; 
+    bool flag = false; 
     while ( !parser_at_eof(p) && aux != NULL) {
-
         if (type == ARG_NORMAL) {
             if (aux == NULL) {
                 flag = true;
-                }
-                scommand_push_back(new_command, aux);
-                aux = parser_next_argument(p, &type);
+            }
+            scommand_push_back(new_command, aux);
+            aux = parser_next_argument(p, &type);
     }
-
     for (int i = 0; i<2; i++) {
         if (type == ARG_INPUT) {
-                if (aux == NULL) {
-                    flag = true;
-                    break;
-                }
-                scommand_set_redir_in(new_command, aux);
-                aux = parser_next_argument(p, &type);
+            if (aux == NULL) {
+                flag = true;
+                break;
+            }
+            scommand_set_redir_in(new_command, aux);
+            aux = parser_next_argument(p, &type);
         }else if (type == ARG_OUTPUT) {
-                if (aux == NULL) {
-                    flag = true;
-                    break;
-                }
-                scommand_set_redir_out(new_command, aux);
-                aux = parser_next_argument(p, &type);
+            if (aux == NULL) {
+                flag = true;
+                break;
+            }
+            scommand_set_redir_out(new_command, aux);
+            aux = parser_next_argument(p, &type);
         }
     }
 
