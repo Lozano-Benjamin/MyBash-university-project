@@ -18,6 +18,7 @@ static scommand parse_scommand(Parser p) {
             }
             scommand_push_back(new_command, aux);
             aux = parser_next_argument(p, &type);
+        }
     }
     for (int i = 0; i<2; i++) {
         if (type == ARG_INPUT) {
@@ -36,16 +37,12 @@ static scommand parse_scommand(Parser p) {
             aux = parser_next_argument(p, &type);
         }
     }
-
     if (flag || scommand_is_empty(new_command)) {
         new_command = scommand_destroy(new_command);
         new_command = NULL;
     }
-
     return new_command; 
 }     
-
-
 
 pipeline parse_pipeline(Parser p) {
     pipeline result = pipeline_new();
@@ -69,6 +66,5 @@ pipeline parse_pipeline(Parser p) {
         result = pipeline_destroy(result);
         result = NULL;
     }
-    
     return result; 
 }
