@@ -1,8 +1,17 @@
+/*
+Cosas que quedan para hacer en esto
+Terminar el exit
+Mejorar el help
+Ver si hay una mejor forma para modularizar
+*/
+
 
 #include <assert.h>
 #include <stdbool.h>
-
+#include <stdio.h>
+#include <string.h>
 #include "command.h"
+#include "builtin.h"
 
 //librerias para que ande las syscalls
 #include <unistd.h> 
@@ -51,9 +60,9 @@ static void run_exit(scommand cmd) {
 
 bool builtin_is_internal(scommand cmd) {
     assert(cmd != NULL);
-    bool is_cd = scommand_front(cmd) == "cd";
-    bool is_help = scommand_front(cmd) == "help";
-    bool is_exit = scommand_front(cmd) == "exit";
+    bool is_cd = strcmp(scommand_front(cmd),"cd") == 0;
+    bool is_help = strcmp(scommand_front(cmd),"help") == 0;
+    bool is_exit = strcmp(scommand_front(cmd),"exit") == 0;
     return is_cd || is_help || is_exit;
 }
 /*
@@ -86,13 +95,13 @@ bool builtin_alone(pipeline p){
 
 void builtin_run(scommand cmd){
     assert(builtin_is_internal(cmd));
-    if (scommand_front(cmd) == "cd"){
+    if (strcmp(scommand_front(cmd),"cd") == 0){
         run_cd(cmd);
     }
-    else if (scommand_front(cmd) == "help"){
+    else if (strcmp(scommand_front(cmd),"help") == 0){
         run_help(cmd);
     }
-    else if (scommand_front(cmd) == "exit"){
+    else if (strcmp(scommand_front(cmd),"exit") == 0){
         run_exit(cmd);
     }
 
