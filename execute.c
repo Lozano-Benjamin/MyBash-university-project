@@ -1,3 +1,10 @@
+#include <endian.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+#include <string.h> //
+
 #include "command.h"
 #include "builtin.h"
 
@@ -19,6 +26,15 @@ Arrancar con comandos simples e ir escalando de a poco
 
 
 
+static int command_execution(scommand cmd) {
+    if (builtin_is_internal(cmd)) {
+        builtin_run(cmd);
+    }
+    else {
+        char *args[] = {"ls", "-l", NULL};       //ver manera de pasar los args del scommand a array para el exexvp
+        execvp("ls",args);
+    }
+}
 
 
 
