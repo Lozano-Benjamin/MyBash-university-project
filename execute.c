@@ -24,16 +24,34 @@ Arrancar con comandos simples e ir escalando de a poco
 
 */
 
+static char** tomar_args(scommand cmd) {        //funcion propia para tomar los argumentos de un comando
+    assert(cmd != NULL);    
+
+    unsigned int n = scommand_length(cmd);
+    char ** argv = calloc(sizeof(char*), n+1);  //hago un array argv de strings (todo dinamico asi lo puedo retornar)
+    for (unsigned int i = 0; i < n; i++) {      
+        char* arg = scommand_front(cmd);
+        argv[i] = arg;
+        scommand_pop_front(cmd);                //voy poniendo los argumentos en el array 
+    }
+    argv[n] = NULL;             //ultimo elemento NULL, esto por como funciona el execvp
+
+    return argv; //el array argv quedaria por ejemplo ["ls", "-l", NULL]
+}
 
 
 static int command_execution(scommand cmd) {
-    if (builtin_is_internal(cmd)) {
+    assert(cmd != NULL);
+
+    if (builtin_is_internal(cmd)) {     //distinccion de casos de si es interno el comando o no
         builtin_run(cmd);
     }
-    else {
-        char *args[] = {"ls", "-l", NULL};       //ver manera de pasar los args del scommand a array para el exexvp
-        execvp("ls",args);
-    }
+
+    else if (!scommand_is_empty(cmd)) {
+        char** argv = tomar_args(cmd);
+        execvp(argv[0], argv);  //argv[0] carga el nombre del comando (ls por ejemplo) 
+    }                           //y argv todos los argumentos (incluye ls al inicio y NULL al final)
+                                
 }
 
 
