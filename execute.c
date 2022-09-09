@@ -96,7 +96,7 @@ void execute_pipeline(pipeline apipe) {
         execute_foreground(apipe);
     }
     else {
-        //execute_background
+        execute_background(apipe);
     }
 /*
 primero ver si tiene un wait y despues ver su largo
