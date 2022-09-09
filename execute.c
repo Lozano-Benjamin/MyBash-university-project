@@ -110,6 +110,24 @@ static void execute_background(pipeline apipe){
     if (pid == -1) {
         perror("Error en el fork al ejecutarse en background.");
     }else if(pid == 0){
+        /*Pipe es una funcion que comunica dos procesos mediante un array 
+        de dos dimensiones, AKA: int pipe(int pipefd[2]);, por lo que voy a trabajar con eso.
+        Tambien voy a usar el array como archivo vacio, y voy a cerrar su punta de escritura*/
+        int pipefd[2];
+        int pipe_result = pipe(pipefd);
+        if (pipe_result == -1) {
+            perror("Error en el pipe al ejecutarse en background");
+            exit(EXIT_FAILURE);  //Se cierra y da un status de fallo
+        }
+        int p_lect = pipefd[0];
+        int p_esc = pipefd[1];
+        close(p_esc);
+
+        int dup2_result= dup2(p_lect, STDIN_FILENO); //Averiguando esto es parecido al fd de STDIN sobre archivos.
+        if (dup2_result == -1) {
+            perror("Error en dup2 al ejecutarse en background");
+            exit(EXIT_FAILURE); //Se cierra y da un status de fallo
+        }
         execute_foreground(apipe);
         exit(EXIT_SUCCESS);
     }else {
