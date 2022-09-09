@@ -148,7 +148,7 @@ static void execute_background(pipeline apipe){
         int p_esc = pipefd[1];
         close(p_esc);
 
-        int dup2_result= dup2(p_lect, STDIN_FILENO); //Averiguando esto es parecido al fd de STDIN sobre archivos.
+        int dup2_result= dup2(p_lect, 0); //redireccion 
         if (dup2_result == -1) {
             perror("Error en dup2 al ejecutarse en background");
             exit(EXIT_FAILURE); //Se cierra y da un status de fallo
