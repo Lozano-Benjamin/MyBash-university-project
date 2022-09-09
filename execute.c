@@ -101,10 +101,13 @@ static void single_command_execution(scommand cmd) {
             }
 
             char** argv = tomar_args(cmd);
-            execvp(argv[0], argv); //argv[0] carga el nombre del comando (ls por ejemplo) y argv todos los argumentos (incluye ls al inicio y NULL al final)
+            int errorcito = execvp(argv[0], argv); //argv[0] carga el nombre del comando (ls por ejemplo) y argv todos los argumentos (incluye ls al inicio y NULL al final)
+            if (errorcito < 0) {
+                printf("pucha, no se encontro el comando :(\n");
+            }
         }
         else {
-            printf("soy el papi \n");
+            //printf("soy el papi \n");
         }                        
     }                           
                                 

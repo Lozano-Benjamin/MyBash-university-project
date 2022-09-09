@@ -41,7 +41,7 @@ ademas, cd (a secas) te manda a home
         }
     }
     else if (n == 1) { //cd (a secas, te salta a home)
-        int err = syscall(SYS_chdir, "./home");
+        int err = syscall(SYS_chdir, "/home");
         if (err != 0) {
             printf("No se como esto dio un error \n");
         }
