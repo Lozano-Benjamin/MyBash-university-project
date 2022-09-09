@@ -50,8 +50,22 @@ static char** tomar_args(scommand cmd) {        //funcion propia para tomar los 
 
 
 
-static void change_in(scommand cmd) {
-
+static int change_in(scommand cmd) {
+    assert(cmd != NULL);
+    char* in = scommand_get_redir_in(cmd);
+    if(in != NULL){
+        int file = open(in, O_RDONLY);
+        if (file < 0){
+            printf("Error en fd \n");
+            return(EXIT_FAILURE);
+        }
+        int res = dup2(file, STDIN_FILENO);
+        if(res < 0){
+            printf("Error redir\n");
+            return(EXIT_FAILURE);
+        }
+    }
+    return(EXIT_SUCCESS);
 }
 
 static void change_out(scommand cmd) {
