@@ -2,3 +2,4 @@
 .vscode/settings.json
 .vscode/c_cpp_properties.json
 tests/Makefile
+.vscode/launch.json
