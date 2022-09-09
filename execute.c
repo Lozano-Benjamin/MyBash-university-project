@@ -57,7 +57,7 @@ static void change_in(scommand cmd) {
 static void change_out(scommand cmd) {
     assert (cmd !=NULL);
 
-    char * out_r = scommand_get_redir_in(cmd);
+    char * out_r = scommand_get_redir_out(cmd);
 
     if (out_r != NULL){
         int fd_out = open (out_r, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR); //crea como lectura y escritura, le da permiso al usuario
