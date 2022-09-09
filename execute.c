@@ -55,7 +55,29 @@ static void change_in(scommand cmd) {
 }
 
 static void change_out(scommand cmd) {
+    assert (cmd !=NULL);
 
+    char * out_r = scommand_get_redir_in(cmd);
+
+    if (out_r != NULL){
+        int fd_out = open (out_r, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR); //crea como lectura y escritura, le da permiso al usuario
+
+        if (fd_out < 0){                //si fd da error
+            printf ("Error en fd\n");
+        }
+
+        int redir_out = dup2 (fd_out,1); //redireccion del file descriptor
+
+        if (redir_out < 0){              //si la redireccion da error
+            printf ("Error redir\n");
+        }   
+
+        int fd_close= close (fd_out);   //cierre del file desecriptor
+        
+        if (fd_close <0){               // si el cierre da error (no deberia)
+            printf ("Error close\n");
+        }
+    }
 }
 
 static void single_command_execution(scommand cmd) {
