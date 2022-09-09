@@ -6,7 +6,9 @@
 #include <string.h>
 #include <unistd.h> 
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <fcntl.h>
+
 
 #include "command.h"
 #include "builtin.h"
@@ -83,8 +85,19 @@ static void execute_foreground(pipeline apipe) {
 }
 
 
+/*Para poder hacer correr el background, voy a correr todo el proceso en un hijo mediante un fork */
 static void execute_background(pipeline apipe){
-    /*En construccion*/
+    pid_t pid = fork();
+    if (pid == -1) {
+        perror("Error en el fork al ejecutarse en background.");
+    }else if(pid == 0){
+        //Aca va el codigo de ejecucion en background
+    }else {
+        /*Proceso padre, va a esperar a que se termine el fork de su hijo,
+          entonces solo necesitamos hacer un Wait al primero porque internamente los
+          demas procesos padre esperaran a sus hijos. */
+          wait(NULL);
+    }
 }
 
 
