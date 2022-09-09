@@ -11,12 +11,14 @@ static scommand parse_scommand(Parser p) {
     arg_kind_t type = ARG_NORMAL;
     char *aux = parser_next_argument(p, &type);
    bool flag = false; 
-    while ( type==ARG_NORMAL && !parser_at_eof(p) && aux != NULL ) {
+    while ( type==ARG_NORMAL && !parser_at_eof(p) && p != NULL && aux != NULL) {
                 if (aux == NULL) {
                 flag = true;
+                break;
                 }
-                scommand_push_back(new_command, aux);
-                aux = parser_next_argument(p, &type);
+                    scommand_push_back(new_command, aux);
+                    aux = parser_next_argument(p, &type);
+                
     }
 
     for (int i = 0; i<2; i++) {
@@ -51,7 +53,7 @@ pipeline parse_pipeline(Parser p) {
     bool error = false, another_pipe=true, background_status = false;
     cmd = parse_scommand(p); //
     error = (cmd==NULL); /* Comando inválido al empezar */
-    while (another_pipe && !error) {    
+    while (another_pipe && !error && p != NULL) {    
         pipeline_push_back(result, cmd);
         parser_op_pipe(p, &another_pipe);
         if(another_pipe){
@@ -59,10 +61,14 @@ pipeline parse_pipeline(Parser p) {
         }
         error = (cmd == NULL);
     }
-    parser_op_background(p,&background_status);
-    if (background_status) {
-        pipeline_set_wait(result, false); 
+    if (p != NULL && result != NULL) {
+        parser_op_background(p,&background_status);
+        if (background_status) {
+            pipeline_set_wait(result, false); 
+        }
     }
+
+
     if (error) {
         result = pipeline_destroy(result);
         result = NULL;
