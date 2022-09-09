@@ -40,7 +40,7 @@ static char** tomar_args(scommand cmd) {        //funcion propia para tomar los 
 }
 
 
-static int command_execution(scommand cmd) {
+static void command_execution(scommand cmd) {
     assert(cmd != NULL);
 
     if (builtin_is_internal(cmd)) {     //distinccion de casos de si es interno el comando o no
@@ -57,7 +57,20 @@ static int command_execution(scommand cmd) {
 
 
 void execute_pipeline(pipeline apipe) {
-
+/*
+primero ver si tiene un wait y despues ver su largo
+*/
+    if (pipeline_get_wait(apipe)) {
+        //COMPLETAR
+        if (pipeline_length(apipe) == 1) {
+            command_execution(pipeline_front(apipe));
+        }
+    }
+/*
+ver dos casos:
+    - comando simple (ejecuto  un solo comando)
+    - pipeline doble (hago pipe)
+*/
 
 }
 /*

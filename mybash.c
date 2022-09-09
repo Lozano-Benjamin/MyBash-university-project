@@ -22,6 +22,7 @@ int main(int argc, char *argv[]) {
     while (!quit) {
         show_prompt();
         pipe = parse_pipeline(input);
+        execute_pipeline(pipe);
 
         /* Hay que salir luego de ejecutar? */
         quit = parser_at_eof(input);
