@@ -83,6 +83,12 @@ static void execute_foreground(pipeline apipe) {
 }
 
 
+static void execute_background(pipeline apipe){
+    /*En construccion*/
+}
+
+
+
 
 void execute_pipeline(pipeline apipe) {
 
