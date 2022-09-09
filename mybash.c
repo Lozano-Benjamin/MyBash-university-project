@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h> 
 
 #include "command.h"
 #include "execute.h"
@@ -9,7 +10,8 @@
 #include "builtin.h"
 
 static void show_prompt(void) {
-    printf ("mybash> ");
+    char s[100];
+    printf ("mybash %s>", getcwd(s, 100));
     fflush (stdout);
 }
 
@@ -31,7 +33,7 @@ int main(int argc, char *argv[]) {
          *
          */
     }
-    parser_destroy(input); input = NULL;
+    input = parser_destroy(input); input = NULL;
     return EXIT_SUCCESS;
 }
 

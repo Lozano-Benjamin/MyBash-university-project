@@ -3,10 +3,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
-#include <string.h> //
+#include <string.h>
+#include <unistd.h> 
+#include <sys/types.h>
+#include <fcntl.h>
 
 #include "command.h"
 #include "builtin.h"
+#include "execute.h"
 
 /*
 Lista de tareas a tomar en cuenta:!
@@ -60,12 +64,12 @@ void execute_pipeline(pipeline apipe) {
 /*
 primero ver si tiene un wait y despues ver su largo
 */
-    if (pipeline_get_wait(apipe)) {
-        //COMPLETAR
+    // if (pipeline_get_wait(apipe)) {
+    //     //COMPLETAR
         if (pipeline_length(apipe) == 1) {
             command_execution(pipeline_front(apipe));
         }
-    }
+    //}
 /*
 ver dos casos:
     - comando simple (ejecuto  un solo comando)

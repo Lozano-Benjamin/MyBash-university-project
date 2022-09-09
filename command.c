@@ -297,7 +297,7 @@ bool pipeline_is_empty(const pipeline self) {
  */
 
 unsigned int pipeline_length(const pipeline self){ // Fabri (Revisar y poner Ensures)
-    assert (self !=NULL);
+    assert(self !=NULL);
     unsigned int length=0;
     for (unsigned int i=0; i < g_slist_length(self->command_list); ++i){
         ++length;
