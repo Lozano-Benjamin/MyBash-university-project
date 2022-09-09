@@ -110,7 +110,8 @@ static void execute_background(pipeline apipe){
     if (pid == -1) {
         perror("Error en el fork al ejecutarse en background.");
     }else if(pid == 0){
-        //Aca va el codigo de ejecucion en background
+        execute_foreground(apipe);
+        exit(EXIT_SUCCESS);
     }else {
         /*Proceso padre, va a esperar a que se termine el fork de su hijo,
           entonces solo necesitamos hacer un Wait al primero porque internamente los
