@@ -44,7 +44,7 @@ static char** tomar_args(scommand cmd) {        //funcion propia para tomar los 
 }
 
 
-static void command_execution(scommand cmd) {
+static void single_command_execution(scommand cmd) {
     assert(cmd != NULL);
 
     if (builtin_is_internal(cmd)) {     //distinccion de casos de si es interno el comando o no
@@ -52,25 +52,51 @@ static void command_execution(scommand cmd) {
     }
 
     else if (!scommand_is_empty(cmd)) {
-        char** argv = tomar_args(cmd);
-        execvp(argv[0], argv);  //argv[0] carga el nombre del comando (ls por ejemplo) 
-    }                           //y argv todos los argumentos (incluye ls al inicio y NULL al final)
+        pid_t pid = fork();
+        if (pid < 0) {
+            printf("Error del fork en single_command_execution \n");
+        }
+        else if (pid == 0) {
+            char** argv = tomar_args(cmd);
+            execvp(argv[0], argv); //argv[0] carga el nombre del comando (ls por ejemplo) y argv todos los argumentos (incluye ls al inicio y NULL al final)
+        }
+        else {
+            printf("soy el papi \n");
+        }                        
+    }                           
                                 
+}
+
+static void multiple_command_execution(pipeline apipe) {
+    //hacer en algun momento xd
+    printf("jaja comando multiple \n");
+}
+
+static void execute_foreground(pipeline apipe) {
+    //vemos si es simple o multiple
+    if (pipeline_length(apipe) == 1) {
+        single_command_execution(pipeline_front(apipe)); //le paso el comando solito que tiene
+    }
+    else {
+        multiple_command_execution(apipe);
+    }
 }
 
 
 
 void execute_pipeline(pipeline apipe) {
+
+    if (pipeline_get_wait(apipe)) {
+        execute_foreground(apipe);
+    }
+    else {
+        //execute_background
+    }
 /*
 primero ver si tiene un wait y despues ver su largo
-*/
-    // if (pipeline_get_wait(apipe)) {
-    //     //COMPLETAR
-        if (pipeline_length(apipe) == 1) {
-            command_execution(pipeline_front(apipe));
-        }
-    //}
-/*
+
+        ES BACK O FORE?
+    e simple    o      multiple?
 ver dos casos:
     - comando simple (ejecuto  un solo comando)
     - pipeline doble (hago pipe)
