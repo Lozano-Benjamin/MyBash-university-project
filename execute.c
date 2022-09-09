@@ -56,13 +56,13 @@ static int change_in(scommand cmd) {
     if(in != NULL){
         int file = open(in, O_RDONLY);
         if (file < 0){
-            printf("Error en fd \n");
-            return(EXIT_FAILURE);
+            printf("pucha, no se encontró el archivo de input :c \n");
+            exit(EXIT_FAILURE);
         }
         int res = dup2(file, STDIN_FILENO);
         if(res < 0){
             printf("Error redir\n");
-            return(EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
     }
     return(EXIT_SUCCESS);
