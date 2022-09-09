@@ -126,6 +126,7 @@ void execute_pipeline(pipeline apipe) {
 
     if (pipeline_get_wait(apipe)) {
         execute_foreground(apipe);
+        wait(NULL);    //este wait hace que el prompt se muestre antes del comando
     }
     else {
         execute_background(apipe);
