@@ -50,7 +50,13 @@ static char** tomar_args(scommand cmd) {        //funcion propia para tomar los 
 
 
 
-static int change_in(scommand cmd);
+static void change_in(scommand cmd) {
+
+}
+
+static void change_out(scommand cmd) {
+
+}
 
 static void single_command_execution(scommand cmd) {
     assert(cmd != NULL);
@@ -64,7 +70,14 @@ static void single_command_execution(scommand cmd) {
         if (pid < 0) {
             printf("Error del fork en single_command_execution \n");
         }
-        else if (pid == 0) {
+        else if (pid == 0) {    
+            if (scommand_get_redir_in(cmd) != NULL) {
+                change_in(cmd);
+            }
+            if (scommand_get_redir_out(cmd) != NULL) {
+                change_out(cmd);
+            }
+
             char** argv = tomar_args(cmd);
             execvp(argv[0], argv); //argv[0] carga el nombre del comando (ls por ejemplo) y argv todos los argumentos (incluye ls al inicio y NULL al final)
         }
