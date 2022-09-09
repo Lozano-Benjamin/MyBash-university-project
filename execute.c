@@ -9,7 +9,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-
+#include "tests/syscall_mock.h" //libreria para que los tests funcionen correctamente
 #include "command.h"
 #include "builtin.h"
 #include "execute.h"
@@ -30,6 +30,9 @@ Arrancar con comandos simples e ir escalando de a poco
 
 */
 
+
+
+
 static char** tomar_args(scommand cmd) {        //funcion propia para tomar los argumentos de un comando
     assert(cmd != NULL);    
 
@@ -45,6 +48,9 @@ static char** tomar_args(scommand cmd) {        //funcion propia para tomar los 
     return argv; //el array argv quedaria por ejemplo ["ls", "-l", NULL]
 }
 
+
+
+static int change_in(scommand cmd);
 
 static void single_command_execution(scommand cmd) {
     assert(cmd != NULL);
