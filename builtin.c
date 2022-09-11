@@ -55,7 +55,8 @@ static void run_help(scommand cmd) {
 }
 
 static void run_exit(scommand cmd) {
-    //TODO (NI IDEA COMO SE HACE HERMANO QUE ES ESTO)
+    printf ("Chau chau\n");
+    quit= true;
 }
 
 bool builtin_is_internal(scommand cmd) {

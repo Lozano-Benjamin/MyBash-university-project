@@ -18,7 +18,7 @@ static void show_prompt(void) {
 int main(int argc, char *argv[]) {
     pipeline pipe;
     Parser input;
-    bool quit = false;
+    quit = false;
 
 
     while (!quit) {

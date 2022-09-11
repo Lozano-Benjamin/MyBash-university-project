@@ -5,6 +5,7 @@
 
 #include "command.h"
 
+bool quit;
 
 bool builtin_is_internal(scommand cmd);
 /*
