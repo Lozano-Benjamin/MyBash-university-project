@@ -8,10 +8,10 @@
 
 static scommand parse_scommand(Parser p) {
     scommand new_command = scommand_new();
-    arg_kind_t type = ARG_NORMAL;
+    arg_kind_t type =ARG_NORMAL ;
     char *aux = parser_next_argument(p, &type);
    bool flag = false; 
-    while ( type==ARG_NORMAL && !parser_at_eof(p) && p != NULL && aux != NULL) {
+    while (type == ARG_NORMAL && !parser_at_eof(p) && p != NULL && aux != NULL) {
                 if (aux == NULL) {
                 flag = true;
                 break;
@@ -50,24 +50,27 @@ static scommand parse_scommand(Parser p) {
 pipeline parse_pipeline(Parser p) {
     pipeline result = pipeline_new();
     scommand cmd = NULL;
-    bool error = false, another_pipe=true, background_status = false;
+    bool error = false, another_pipe=true, background_status = false, garbage = false;
     cmd = parse_scommand(p); //
     error = (cmd==NULL); /* Comando inválido al empezar */
     while (another_pipe && !error && p != NULL) {    
         pipeline_push_back(result, cmd);
         parser_op_pipe(p, &another_pipe);
         if(another_pipe){
+           
             cmd = parse_scommand(p);
+            
         }
         error = (cmd == NULL);
+         
     }
     if (p != NULL && result != NULL) {
-        parser_op_background(p,&background_status);
+       parser_op_background(p,&background_status);
+        parser_garbage(p, &garbage);
         if (background_status) {
             pipeline_set_wait(result, false); 
         }
     }
-
 
     if (error) {
         result = pipeline_destroy(result);
