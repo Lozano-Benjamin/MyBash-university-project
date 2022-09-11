@@ -39,7 +39,6 @@ scommand scommand_new(void) {
 
 
 scommand scommand_destroy(scommand self){
-
     assert(self != NULL);
 
     g_slist_free_full(self->comm_args, free); //usar pop
@@ -238,10 +237,13 @@ pipeline pipeline_new(void){ //Benja
 
 pipeline pipeline_destroy(pipeline self){  //Benja
     assert(self != NULL);
-    g_slist_free_full(self->command_list, free); //Libero cada scommand
-    self->command_list = NULL; //Setteo en NULL
-    free(self);     //Libero self
-    self = NULL;        //Setteo en NULL
+    while (!pipeline_is_empty(self)){
+        scommand aux= pipeline_front(self);
+        pipeline_pop_front(self);
+        aux=scommand_destroy (aux);
+    }
+    free(self);
+    self=NULL;
     assert(self == NULL);
     return self;
 }
