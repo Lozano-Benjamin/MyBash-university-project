@@ -106,11 +106,11 @@ static void single_command_execution(scommand cmd) {
         if (pid < 0) {
             printf("Error del fork en single_command_execution \n");
         }
-        else if (pid == 0) {    
-            if (scommand_get_redir_in(cmd) != NULL) {
+        else if (pid == 0) {    //forkeo
+            if (scommand_get_redir_in(cmd) != NULL) {   //veo si tiene redir_in
                 change_in(cmd);
             }
-            if (scommand_get_redir_out(cmd) != NULL) {
+            if (scommand_get_redir_out(cmd) != NULL) {  //veo si tiene redir_out
                 change_out(cmd);
             }
 
@@ -129,22 +129,23 @@ static void single_command_execution(scommand cmd) {
 }
 
 static void multiple_command_execution(pipeline apipe) {
-    //hacer en algun momento xd
-    //printf("jaja comando multiple \n");
+    /*este multiple solo puede ejecutar hasta dos comandos
+    * sea eso un comando del estilo 
+    * ls -l | wc 
+    */
 
-
-    scommand fst_command = pipeline_front(apipe);
+    scommand fst_command = pipeline_front(apipe);  //guardo el primer comando
     pipeline_pop_front(apipe);
-    scommand snd_command = pipeline_front(apipe);
+    scommand snd_command = pipeline_front(apipe);   //guardo el segundo comando
 
-    pid_t pida = fork();
-    if (pida == 0){
-        int p[2];
+    pid_t pid_a = fork();   //fork para ejecutar los pipes y que no se termine la cosa
+    if (pid_a == 0){        //el hijo ejecuta los pipes y el padre espera
+        int p[2];           //array del pipe
 
         pipe(p);
-        pid_t pid = fork();
+        pid_t pid = fork(); //forkeo los comandos a ejecutar en el pipe
 
-        if (pid == 0) {
+        if (pid == 0) {     //se ejecuta el segundo comando (toma como input el output del otro)
 
             dup2(p[0],0);
 
@@ -154,7 +155,7 @@ static void multiple_command_execution(pipeline apipe) {
             exit(EXIT_SUCCESS);
 
         }
-        else if (pid > 0){
+        else if (pid > 0){  //se ejecuta el primer comando (da el input al otro)
             // close(p[1]);
             dup2(p[1],1);
             close(p[0]);
@@ -166,7 +167,7 @@ static void multiple_command_execution(pipeline apipe) {
          }
     }
     else {
-        wait(NULL);
+        wait(NULL);     //espero a los beibis
     }
 }
 
@@ -176,11 +177,10 @@ static void execute_foreground(pipeline apipe) {
         single_command_execution(pipeline_front(apipe)); //le paso el comando solito que tiene
     }
     else if (pipeline_length(apipe) == 2){
-        multiple_command_execution(apipe);
-        //wait(NULL);
+        multiple_command_execution(apipe);              //ejecuto el comando multiple
     }
     else {
-        printf("bue hermano que era el pipe \n");
+        printf("Lo sentimos, solo hasta dos comandos pipeados )): (ejemplo: ls -l | wc) \n");
     }
 }
 
@@ -224,28 +224,17 @@ static void execute_background(pipeline apipe){
 
 void execute_pipeline(pipeline apipe) {
 
+    /* execute_pipline funciona primero chequeando si el comando es fore o back (ground)
+    * luego de ver su wait, se ve su largo
+    *   de ahi se ejecutan cada uno
+    * 
+    */
     if (pipeline_get_wait(apipe)) {
         execute_foreground(apipe);
         wait(NULL);    //este wait hace que el prompt se muestre antes del comando
     }
     else {
-        execute_background(apipe);
+        execute_background(apipe); //el back se ejecuta con el fore, una flasheada
     }
-/*
-primero ver si tiene un wait y despues ver su largo
-
-        ES BACK O FORE?
-    e simple    o      multiple?
-ver dos casos:
-    - comando simple (ejecuto  un solo comando)
-    - pipeline doble (hago pipe)
-*/
 
 }
-/*
- * Ejecuta un pipeline, identificando comandos internos, forkeando, y
- *   redirigiendo la entrada y salida. puede modificar `apipe' en el proceso
- *   de ejecución.
- *   apipe: pipeline a ejecutar
- * Requires: apipe!=NULL
- */
