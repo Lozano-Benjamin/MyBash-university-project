@@ -1,11 +1,3 @@
-/*
-Cosas que quedan para hacer en esto
-Terminar el exit
-Mejorar el help
-Ver si hay una mejor forma para modularizar
-*/
-
-
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -50,12 +42,12 @@ ademas, cd (a secas) te manda a home
 
 
 static void run_help(scommand cmd) {
-    printf ("Ayuda para el help\n");
+    printf ("Ayuda para el help TAREITA\n");
 
 }
 
 static void run_exit(scommand cmd) {
-    printf ("Chau chau\n");
+    printf ("Chau chau!!! nos vemoooooos!!! c:\n");
     quit= true;
 }
 
@@ -66,33 +58,14 @@ bool builtin_is_internal(scommand cmd) {
     bool is_exit = strcmp(scommand_front(cmd),"exit") == 0;
     return is_cd || is_help || is_exit;
 }
-/*
- * Indica si el comando alojado en `cmd` es un comando interno
- *
- * REQUIRES: cmd != NULL
- *
- */
 
 
 bool builtin_alone(pipeline p){
     assert(p!=NULL);
     bool is_alone = pipeline_length(p) == 1 && builtin_is_internal(pipeline_front(p));
-    
     return is_alone; 
 }
-/*
- * Indica si el pipeline tiene solo un elemento y si este se corresponde a un
- * comando interno.
- *
- * REQUIRES: p != NULL
- *
- * ENSURES:
- *
- * builtin_alone(p) == pipeline_length(p) == 1 &&
- *                     builtin_is_internal(pipeline_front(p))
- *
- *
- */
+
 
 void builtin_run(scommand cmd){
     assert(builtin_is_internal(cmd));
@@ -107,20 +80,5 @@ void builtin_run(scommand cmd){
     }
 
 }
-/*
- * Ejecuta un comando interno
- *
- * REQUIRES: {builtin_is_internal(cmd)}
- *
- * 
- * 
- * La forma de esto seria algo como
- * if == front(cd) 
- *  {run_cd}
- * if == front(exit)
- *  {run_exit}
- * .....
- */
-
 
 

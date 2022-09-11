@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
         quit = parser_at_eof(input);    
 
         // if (pipe == NULL) {
-        //     printf("eeee que?!?!? \n");
+        //     printf("eeee que?!?!? \n");  //este print es para comandos como "ls >"
         // }
         if (pipe != NULL) {
             execute_pipeline(pipe);
