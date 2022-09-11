@@ -27,8 +27,11 @@ int main(int argc, char *argv[]) {
         pipe = parse_pipeline(input);
 
         /* Hay que salir luego de ejecutar? */
-        quit = parser_at_eof(input);
+        quit = parser_at_eof(input);    
 
+        // if (pipe == NULL) {
+        //     printf("eeee que?!?!? \n");
+        // }
         if (pipe != NULL) {
             execute_pipeline(pipe);
             pipe = pipeline_destroy(pipe);

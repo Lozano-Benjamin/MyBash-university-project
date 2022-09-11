@@ -130,7 +130,7 @@ static void single_command_execution(scommand cmd) {
 
 static void multiple_command_execution(pipeline apipe) {
     //hacer en algun momento xd
-    printf("jaja comando multiple \n");
+    //printf("jaja comando multiple \n");
 
 
     scommand fst_command = pipeline_front(apipe);
@@ -153,7 +153,6 @@ static void multiple_command_execution(pipeline apipe) {
             single_command_execution(snd_command);
             exit(EXIT_SUCCESS);
 
-            //exit(EXIT_FAILURE);
         }
         else if (pid > 0){
             // close(p[1]);
@@ -164,7 +163,7 @@ static void multiple_command_execution(pipeline apipe) {
             single_command_execution(fst_command);
             wait(NULL);
             exit(EXIT_SUCCESS);
-            }
+         }
     }
     else {
         wait(NULL);
