@@ -10,32 +10,32 @@ static scommand parse_scommand(Parser p) {
     scommand new_command = scommand_new();
     arg_kind_t type =ARG_NORMAL ;
     char *aux = parser_next_argument(p, &type);
-   bool flag = false; 
+    bool flag = false; 
     while (type == ARG_NORMAL && !parser_at_eof(p) && p != NULL && aux != NULL) {
-                if (aux == NULL) {
-                flag = true;
-                break;
-                }
-                    scommand_push_back(new_command, aux);
-                    aux = parser_next_argument(p, &type);
-                
+        if (aux == NULL) {
+            flag = true;
+            break;
+        }
+        scommand_push_back(new_command, aux);
+        aux = parser_next_argument(p, &type);           
     }
 
     for (int i = 0; i<2; i++) {
         if (type == ARG_INPUT) {
-                if (aux == NULL) {
-                    flag = true;
-                    break;
-                }
-                scommand_set_redir_in(new_command, aux);
-                aux = parser_next_argument(p, &type);
-        }else if (type == ARG_OUTPUT) {
-                if (aux == NULL) {
-                    flag = true;
-                    break;
-                }
-                scommand_set_redir_out(new_command, aux);
-                aux = parser_next_argument(p, &type);
+            if (aux == NULL) {
+            flag = true;
+            break;
+        }
+        scommand_set_redir_in(new_command, aux);
+        aux = parser_next_argument(p, &type);
+        }
+        else if (type == ARG_OUTPUT) {
+            if (aux == NULL) {
+            flag = true;
+            break;
+        }
+        scommand_set_redir_out(new_command, aux);
+        aux = parser_next_argument(p, &type);
         }
     }
 
@@ -57,15 +57,13 @@ pipeline parse_pipeline(Parser p) {
         pipeline_push_back(result, cmd);
         parser_op_pipe(p, &another_pipe);
         if(another_pipe){
-           
             cmd = parse_scommand(p);
-            
         }
         error = (cmd == NULL);
          
     }
     if (p != NULL && result != NULL) {
-       parser_op_background(p,&background_status);
+        parser_op_background(p,&background_status);
         parser_garbage(p, &garbage);
         if (background_status) {
             pipeline_set_wait(result, false); 
