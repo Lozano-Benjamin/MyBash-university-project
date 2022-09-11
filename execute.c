@@ -118,6 +118,7 @@ static void single_command_execution(scommand cmd) {
             int errorcito = execvp(argv[0], argv); //argv[0] carga el nombre del comando (ls por ejemplo) y argv todos los argumentos (incluye ls al inicio y NULL al final)
             if (errorcito < 0) {
                 printf("pucha, no se encontro el comando :(\n");
+                exit(EXIT_FAILURE);
             }
         }
         else {
@@ -130,6 +131,44 @@ static void single_command_execution(scommand cmd) {
 static void multiple_command_execution(pipeline apipe) {
     //hacer en algun momento xd
     printf("jaja comando multiple \n");
+
+
+    scommand fst_command = pipeline_front(apipe);
+    pipeline_pop_front(apipe);
+    scommand snd_command = pipeline_front(apipe);
+
+    pid_t pida = fork();
+    if (pida == 0){
+        int p[2];
+
+        pipe(p);
+        pid_t pid = fork();
+
+        if (pid == 0) {
+
+            dup2(p[0],0);
+
+            close(p[0]);
+            close(p[1]);
+            single_command_execution(snd_command);
+            exit(EXIT_SUCCESS);
+
+            //exit(EXIT_FAILURE);
+        }
+        else if (pid > 0){
+            // close(p[1]);
+            dup2(p[1],1);
+            close(p[0]);
+            close(p[1]);
+            
+            single_command_execution(fst_command);
+            wait(NULL);
+            exit(EXIT_SUCCESS);
+            }
+    }
+    else {
+        wait(NULL);
+    }
 }
 
 static void execute_foreground(pipeline apipe) {
@@ -137,8 +176,12 @@ static void execute_foreground(pipeline apipe) {
     if (pipeline_length(apipe) == 1) {
         single_command_execution(pipeline_front(apipe)); //le paso el comando solito que tiene
     }
-    else {
+    else if (pipeline_length(apipe) == 2){
         multiple_command_execution(apipe);
+        //wait(NULL);
+    }
+    else {
+        printf("bue hermano que era el pipe \n");
     }
 }
 

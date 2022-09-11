@@ -37,7 +37,7 @@ ademas, cd (a secas) te manda a home
         char* path = scommand_front(cmd);
         int err = syscall(SYS_chdir, path);
         if (err != 0) {
-            printf("pucha, no se encontró el directorio\n");
+            printf("pucha, no se encontró el directorio :( \n");
         }
     }
     else if (n == 1) { //cd (a secas, te salta a home)
