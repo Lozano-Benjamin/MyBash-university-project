@@ -43,11 +43,12 @@ ademas, cd (a secas) te manda a home
 
 static void run_help(scommand cmd) {
     printf ("\n");
-    printf ("El nombre de este shell es: mybash :) \n");
+    printf ("Mybash :) \n");
     printf ("\n");
     printf ("Somos 4 autores: \nBenjamin Lozano\nFabrizio Longhi\nGaston Bonfils\nFacundo Ayala\n");
     printf ("\n");
-    printf ("Hay tres comandos internos:\nhelp: es este mensaje :) \nexit: sale de la consola (porfavor no lo hagas:/ )\ncd: te mueve de escritorio\n ");
+    printf ("Hay tres comandos internos:\nhelp: es este mensaje :) \nexit: sale de la consola (porfavor no lo hagas:/ )\ncd: te mueve de directorio, usando path relativo y absoluto (ej: /home/USUARIO/Documentos/)\n ");
+    printf ("\n");
 }
 
 static void run_exit(scommand cmd) {
