@@ -12,7 +12,6 @@
 #include <sys/types.h>
 
 
-//extern bool quit;
 
 static void run_cd(scommand cmd) {
 
@@ -58,8 +57,8 @@ static void run_help(scommand cmd) {
 
 static void run_exit(scommand cmd)  {
     printf ("Chau chau!!! nos vemoooooos!!! c:\n");
-    //exit(2);
-    quit= true;
+    exit(2);
+    //quit= true;
 }
 
 bool builtin_is_internal(scommand cmd) {
