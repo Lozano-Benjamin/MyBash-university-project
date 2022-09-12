@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "command.h"
 #include "builtin.h"
 
@@ -11,7 +12,7 @@
 #include <sys/types.h>
 
 
-extern bool quit;
+//extern bool quit;
 
 static void run_cd(scommand cmd) {
 
@@ -24,6 +25,7 @@ ademas, cd (a secas) te manda a home
 
 */
     unsigned int n = scommand_length(cmd);
+    assert(cmd != NULL);
     if (n > 2) {    //cd algo/algo basura
         printf("Muchos argumentos\n");
     }
@@ -48,14 +50,15 @@ static void run_help(scommand cmd) {
     printf ("\n");
     printf ("Mybash :) \n");
     printf ("\n");
-    printf ("Somos 4 autores: \nBenjamin Lozano\nFabrizio Longhi\nGaston Bonfils\nFacundo Ayala\n");
+    printf ("Autores: \nBenjamin Lozano\nFabrizio Longhi\nGaston Bonfils\nFacundo Ayala\n");
     printf ("\n");
-    printf ("Hay tres comandos internos:\nhelp: es este mensaje :) \nexit: sale de la consola (porfavor no lo hagas:/ )\ncd: te mueve de directorio, usando path relativo y absoluto (ej: /home/USUARIO/Documentos/)\n ");
+    printf ("Comandos internos:\n -help: es este mensaje :) \n -exit: sale de la consola (porfavor no lo hagas :c )\n -cd: cambia de directorio, usando path relativo o absoluto (ej: /home/USUARIO/Documentos/)\n ");
     printf ("\n");
 }
 
 static void run_exit(scommand cmd)  {
     printf ("Chau chau!!! nos vemoooooos!!! c:\n");
+    //exit(2);
     quit= true;
 }
 

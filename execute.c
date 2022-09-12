@@ -54,7 +54,7 @@ static int change_in(scommand cmd) {
     assert(cmd != NULL);
     char* in = scommand_get_redir_in(cmd);
     if(in != NULL){
-        int file = open(in, O_RDONLY);
+        int file = open(in, O_RDONLY, S_IRUSR);
         if (file < 0){
             printf("pucha, no se encontró el archivo de input :c \n");
             exit(EXIT_FAILURE);
@@ -63,6 +63,10 @@ static int change_in(scommand cmd) {
         if(res < 0){
             printf("Error redir\n");
             exit(EXIT_FAILURE);
+        }
+        int fd_close = close(file);
+        if (fd_close <0){               // si el cierre da error (no deberia)
+            printf ("Error close\n");
         }
     }
     return(EXIT_SUCCESS);
@@ -230,7 +234,7 @@ static void execute_background(pipeline apipe){
         /*Proceso padre, va a esperar a que se termine el fork de su hijo,
           entonces solo necesitamos hacer un Wait al primero porque internamente los
           demas procesos padre esperaran a sus hijos. */
-          wait(NULL);
+        wait(NULL); //este wait hace que el prompt se muestre bien pero hace que falle un error del test 
     }
 }
 

@@ -14,8 +14,6 @@
 #define COLOR_HOST "\033[38;2;153;255;51m"
 #define COLOR_PATH "\033[38;2;153;204;255m"
 
-bool quit;
-
 static void show_prompt(void) {
     char cwd[100];
     getcwd(cwd, 100);
@@ -50,12 +48,9 @@ int main(int argc, char *argv[]) {
             execute_pipeline(pipe);
             pipe = pipeline_destroy(pipe);
         }
-        /*
-         * COMPLETAR
-         *
-         */
+
     }
     input = parser_destroy(input); input = NULL;
     return EXIT_SUCCESS;
-}
 
+}
