@@ -10,6 +10,9 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 
+
+extern bool quit;
+
 static void run_cd(scommand cmd) {
 
 /*
@@ -51,7 +54,7 @@ static void run_help(scommand cmd) {
     printf ("\n");
 }
 
-static void run_exit(scommand cmd) {
+static void run_exit(scommand cmd)  {
     printf ("Chau chau!!! nos vemoooooos!!! c:\n");
     quit= true;
 }
