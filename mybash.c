@@ -41,8 +41,9 @@ int main(int argc, char *argv[]) {
         quit = parser_at_eof(input);    
 
         // if ((pipe == NULL)) {
-        //     printf("eeee que?!?!? \n");  //este print es para comandos como "ls >"
+        //     printf("Sintaxis inválida\n");  //este print es para comandos como "ls >"
         // }
+        
         if (pipe != NULL) {
             execute_pipeline(pipe);
             pipe = pipeline_destroy(pipe);
