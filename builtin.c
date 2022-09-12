@@ -42,8 +42,12 @@ ademas, cd (a secas) te manda a home
 
 
 static void run_help(scommand cmd) {
-    printf ("Ayuda para el help TAREITA\n");
-
+    printf ("\n");
+    printf ("El nombre de este shell es: mybash :) \n");
+    printf ("\n");
+    printf ("Somos 4 autores: \nBenjamin Lozano\nFabrizio Longhi\nGaston Bonfils\nFacundo Ayala\n");
+    printf ("\n");
+    printf ("Hay tres comandos internos:\nhelp: es este mensaje :) \nexit: sale de la consola (porfavor no lo hagas:/ )\ncd: te mueve de escritorio\n ");
 }
 
 static void run_exit(scommand cmd) {
