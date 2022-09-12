@@ -162,22 +162,37 @@ char * scommand_to_string(const scommand self){
     tmp = self -> comm_args;
     char *res = strdup("");
     if(tmp != NULL){
+        char * aux1=res;
         res = strmerge(res, tmp->data);
+        free(aux1);
         tmp = tmp -> next;
         while(tmp != NULL){
+            char * aux2=res;
             res = strmerge(res, " ");
+            free(aux2);
+            char *aux3=res;
             res = strmerge(res, tmp -> data); // usar puntero aux que apunte a res para que no qeuuede colgando
+            free(aux3);
             tmp = tmp -> next; // usar libreria glib
+          
         }
     }
     if(self -> out != NULL){
+        char *aux_in= res;
         res = strmerge(res, " > ");
+        free(aux_in);
+        char *aux_in2=res;
         res = strmerge(res, self -> out);
+        free(aux_in2);
     }
 
     if(self -> in != NULL){
+        char *aux_out=res;
         res = strmerge(res, " < ");
+        free(aux_out);
+        char *aux_out2=res;
         res = strmerge(res, self -> in);
+        free (aux_out2);
     }
     assert(scommand_is_empty(self) || scommand_get_redir_in(self)==NULL || scommand_get_redir_out(self)==NULL || strlen(res) > 0);
     return res;
@@ -353,20 +368,25 @@ char * pipeline_to_string(const pipeline self){ //Benja.
     if (command_list != NULL) {
 
         char *aux = scommand_to_string(g_slist_nth_data(command_list,0u));
+        char *aux1= result;
         result = strmerge(result,aux);
+        free (aux1);
 
         for (unsigned int i = 1u; i < pipeline_length(self); i++) {
+            char* aux2= result;
             result = strmerge(result, " | ");
+            free(aux2);
             aux = scommand_to_string(g_slist_nth_data(command_list,i));
+            char* aux3=result;
             result = strmerge(result, aux);
+            free(aux3);
         }
 
-        if (!pipeline_get_wait(self)) {
+        if (!pipeline_get_wait(self)) 
+            
             result = strmerge(result, "&");
         }
-    }
-
-
+    
     assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result) > 0);
 
     return result;

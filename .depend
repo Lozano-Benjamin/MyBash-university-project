@@ -1,0 +1,6 @@
+builtin.o: builtin.c command.h builtin.h
+command.o: command.c command.h strextra.h
+execute.o: execute.c tests/syscall_mock.h command.h builtin.h execute.h
+mybash.o: mybash.c command.h execute.h parser.h parsing.h builtin.h
+parsing.o: parsing.c parsing.h command.h parser.h
+strextra.o: strextra.c strextra.h
