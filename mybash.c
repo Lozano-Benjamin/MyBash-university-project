@@ -9,9 +9,20 @@
 #include "parsing.h"
 #include "builtin.h"
 
+
+#define ANSI_COLOR_RESET   "\x1b[0m"
+#define COLOR_HOST "\033[38;2;153;255;51m"
+#define COLOR_PATH "\033[38;2;153;204;255m"
+
 static void show_prompt(void) {
-    char s[100];
-    printf ("mybash %s> ", getcwd(s, 100));
+    char cwd[100];
+    getcwd(cwd, 100);
+    char host[1024];
+    gethostname(host, 1024);
+    char user[1024];
+    getlogin_r(user, 1024);
+
+    printf ("mybash" COLOR_HOST " %s@%s:" COLOR_PATH" %s> " ANSI_COLOR_RESET, user, host ,cwd);
     fflush (stdout);
 }
 
@@ -29,7 +40,7 @@ int main(int argc, char *argv[]) {
         /* Hay que salir luego de ejecutar? */
         quit = parser_at_eof(input);    
 
-        // if (pipe == NULL) {
+        // if ((pipe == NULL)) {
         //     printf("eeee que?!?!? \n");  //este print es para comandos como "ls >"
         // }
         if (pipe != NULL) {
