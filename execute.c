@@ -135,35 +135,50 @@ static void multiple_command_execution(pipeline apipe) {
     */
 
     scommand fst_command = pipeline_front(apipe);  //guardo el primer comando
+    assert(fst_command != NULL);
     pipeline_pop_front(apipe);
     scommand snd_command = pipeline_front(apipe);   //guardo el segundo comando
+    assert(snd_command != NULL);
 
     pid_t pid_a = fork();   //fork para ejecutar los pipes y que no se termine la cosa
-    if (pid_a == 0){        //el hijo ejecuta los pipes y el padre espera
-        int p[2];           //array del pipe
+    if (pid_a < 0) {
+        printf("Error al forkear \n");
+    }
+    else if (pid_a == 0){        //el hijo ejecuta los pipes y el padre espera
+        int p[2];               //array del pipe
 
         pipe(p);
         pid_t pid = fork(); //forkeo los comandos a ejecutar en el pipe
+        if (pid < 0) {
+            printf("Error al forkear \n");
+        }
 
         if (pid == 0) {     //se ejecuta el segundo comando (toma como input el output del otro)
 
-            dup2(p[0],0);
-
-            close(p[0]);
-            close(p[1]);
-            single_command_execution(snd_command);
-            exit(EXIT_SUCCESS);
-
+            int err_dup = dup2(p[0],0);
+            if (err_dup < 0) {
+                printf("Error al cambiar fd \n");
+            }
+            else {
+                close(p[0]);
+                close(p[1]);
+                single_command_execution(snd_command);
+                exit(EXIT_SUCCESS);
+            }
         }
         else if (pid > 0){  //se ejecuta el primer comando (da el input al otro)
-            // close(p[1]);
-            dup2(p[1],1);
-            close(p[0]);
-            close(p[1]);
             
-            single_command_execution(fst_command);
-            wait(NULL);
-            exit(EXIT_SUCCESS);
+            int err_dup_a = dup2(p[1],1);
+            if (err_dup_a < 0) {
+                printf("Error al cambiar fd \n");
+            }
+            else {
+                close(p[0]);
+                close(p[1]); 
+                single_command_execution(fst_command);
+                wait(NULL);
+                exit(EXIT_SUCCESS);
+            }
          }
     }
     else {
