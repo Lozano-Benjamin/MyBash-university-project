@@ -249,28 +249,28 @@ pipeline pipeline_new(void){ //Benja
  */
 
 
-pipeline pipeline_destroy(pipeline self){  //Benja
-    assert(self != NULL);
-    while (self -> command_list != NULL){
-        pipeline_pop_front(self);
-    }
-    free(self);
-    self=NULL;
-    assert(self == NULL);
-    return self;
-}
 // pipeline pipeline_destroy(pipeline self){  //Benja
 //     assert(self != NULL);
-//     while (!pipeline_is_empty(self)){
-//         scommand aux= pipeline_front(self);
+//     while (self -> command_list != NULL){
 //         pipeline_pop_front(self);
-//         aux=scommand_destroy (aux);
 //     }
 //     free(self);
 //     self=NULL;
 //     assert(self == NULL);
 //     return self;
 // }
+pipeline pipeline_destroy(pipeline self){  //Benja
+    assert(self != NULL);
+    while (!pipeline_is_empty(self)){
+        scommand aux= pipeline_front(self);
+        pipeline_pop_front(self);
+        aux=scommand_destroy (aux);
+    }
+    free(self);
+    self=NULL;
+    assert(self == NULL);
+    return self;
+}
 /*
  * Destruye `self'.
  *   self: tubería a a destruir.
@@ -375,51 +375,51 @@ bool pipeline_get_wait(const pipeline self){ // Benja
  *   Returns: ¿Hay que esperar en el pipeline self?
  * Requires: self!=NULL
  */
-char * pipeline_to_string(const pipeline self){
-    assert(self != NULL);
-    char *result = strdup("");
-
-    for (unsigned int i = 0u; i < g_slist_length(self->command_list); ++i){
-        scommand current_scommand = g_slist_nth_data(self->command_list, i);
-        char *simple_command = scommand_to_string(current_scommand);
-        result = strmergefree(result, simple_command);
-        if(i != g_slist_length(self->command_list) - 1u){
-            result = strmergefree(result, "| ");
-        }
-        free(simple_command);
-    }
-
-    if(!pipeline_get_wait(self)){
-        result = strmergefree(result, "&");
-    }
-    assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result) > 0);
-    return (result);
-}
-// char * pipeline_to_string(const pipeline self){ //Benja.
+// char * pipeline_to_string(const pipeline self){
 //     assert(self != NULL);
-//     GSList* command_list = self->command_list ;
-//     char *result = strdup(""); //Esta funcion lo que hace es inicializa y duplica un string.
+//     char *result = strdup("");
 
-//     if (command_list != NULL) {
-
-//         char *aux = scommand_to_string(g_slist_nth_data(command_list,0u));
-//         result = strmergefree(result, aux);
-
-//         for (unsigned int i = 0u; i < pipeline_length(self); ++i) {
-//             result = strmergefree(result, " | ");
-//             aux = scommand_to_string(g_slist_nth_data(command_list,i));
-//             result = strmergefree(result, aux);
+//     for (unsigned int i = 0u; i < g_slist_length(self->command_list); ++i){
+//         scommand current_scommand = g_slist_nth_data(self->command_list, i);
+//         char *simple_command = scommand_to_string(current_scommand);
+//         result = strmergefree(result, simple_command);
+//         if(i != g_slist_length(self->command_list) - 1u){
+//             result = strmergefree(result, "| ");
 //         }
-
-//         if (!pipeline_get_wait(self)){
-//             result = strmergefree(result, "&");
-//         }
+//         free(simple_command);
 //     }
-    
-//     assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result) > 0);
 
-//     return result;
-// } 
+//     if(!pipeline_get_wait(self)){
+//         result = strmergefree(result, "&");
+//     }
+//     assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result) > 0);
+//     return (result);
+// }
+char * pipeline_to_string(const pipeline self){ //Benja.
+    assert(self != NULL);
+    GSList* command_list = self->command_list ;
+    char *result = strdup(""); //Esta funcion lo que hace es inicializa y duplica un string.
+
+    if (command_list != NULL) {
+
+        char *aux = scommand_to_string(g_slist_nth_data(command_list,0u));
+        result = strmergefree(result, aux);
+
+        for (unsigned int i = 0u; i < pipeline_length(self); ++i) {
+            result = strmergefree(result, " | ");
+            aux = scommand_to_string(g_slist_nth_data(command_list,i));
+            result = strmergefree(result, aux);
+        }
+
+        if (!pipeline_get_wait(self)){
+            result = strmergefree(result, "&");
+        }
+    }
+    
+    assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result) > 0);
+
+    return result;
+} 
 /* Pretty printer para hacer debugging/logging.
  * Genera una representación del pipeline en una cadena (aka "serializar").
  *   self: pipeline a convertir.
