@@ -74,17 +74,17 @@ void scommand_push_back(scommand self, char * argument){ //ayala
  */
 
 
-void scommand_pop_front(scommand self){
-    assert(self != NULL && !scommand_is_empty(self));
-    char *front = g_slist_nth_data(self->comm_args, 0);
-    free(front);
-    self->comm_args = g_slist_delete_link(self->comm_args, self->comm_args);
-}
-
-// void scommand_pop_front(scommand self){     //ayala
+// void scommand_pop_front(scommand self){
 //     assert(self != NULL && !scommand_is_empty(self));
-//     self -> comm_args = g_slist_remove(self->comm_args,g_slist_nth_data(self->comm_args, 0));
+//     char *front = g_slist_nth_data(self->comm_args, 0);
+//     free(front);
+//     self->comm_args = g_slist_delete_link(self->comm_args, self->comm_args);
 // }
+
+void scommand_pop_front(scommand self){     //ayala
+    assert(self != NULL && !scommand_is_empty(self));
+    self -> comm_args = g_slist_remove(self->comm_args,g_slist_nth_data(self->comm_args, 0));
+}
 /*
  * Quita la cadena de adelante de la secuencia de cadenas.
  *   self: comando simple al cual sacarle la cadena del frente.
@@ -293,16 +293,16 @@ void pipeline_push_back(pipeline self, scommand sc){    //Facu (Revisar)
  * Ensures: !pipeline_is_empty()
  */
 
-void pipeline_pop_front(pipeline self){
-    assert(self != NULL && !pipeline_is_empty(self));
-    scommand_destroy(pipeline_front(self));
-    self->command_list = g_slist_delete_link(self->command_list, self->command_list);
-}
-
-// void pipeline_pop_front(pipeline self){ // Facu (Revisar)
+// void pipeline_pop_front(pipeline self){
 //     assert(self != NULL && !pipeline_is_empty(self));
-//     self -> command_list = g_slist_remove(self->command_list, g_slist_nth_data(self->command_list, 0));
+//     scommand_destroy(pipeline_front(self));
+//     self->command_list = g_slist_delete_link(self->command_list, self->command_list);
 // }
+
+void pipeline_pop_front(pipeline self){ // Facu (Revisar)
+    assert(self != NULL && !pipeline_is_empty(self));
+    self -> command_list = g_slist_remove(self->command_list, g_slist_nth_data(self->command_list, 0));
+}
 
 /*
  * Quita el comando simple de adelante de la secuencia.
