@@ -18,6 +18,6 @@ char * strmerge(char *s1, char *s2);
  *     merge != NULL && strlen(merge) == strlen(s1) + strlen(s2)
  *
  */
-
+char * strmergefree(char *s1, char *s2);
 
 #endif

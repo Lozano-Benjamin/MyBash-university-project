@@ -74,10 +74,17 @@ void scommand_push_back(scommand self, char * argument){ //ayala
  */
 
 
-void scommand_pop_front(scommand self){     //ayala
+void scommand_pop_front(scommand self){
     assert(self != NULL && !scommand_is_empty(self));
-    self -> comm_args = g_slist_remove(self->comm_args,g_slist_nth_data(self->comm_args, 0));
+    char *front = g_slist_nth_data(self->comm_args, 0);
+    free(front);
+    self->comm_args = g_slist_delete_link(self->comm_args, self->comm_args);
 }
+
+// void scommand_pop_front(scommand self){     //ayala
+//     assert(self != NULL && !scommand_is_empty(self));
+//     self -> comm_args = g_slist_remove(self->comm_args,g_slist_nth_data(self->comm_args, 0));
+// }
 /*
  * Quita la cadena de adelante de la secuencia de cadenas.
  *   self: comando simple al cual sacarle la cadena del frente.
@@ -86,11 +93,22 @@ void scommand_pop_front(scommand self){     //ayala
 
 void scommand_set_redir_in(scommand self, char * filename) {
     assert(self != NULL);
-    self->in = filename;
+    if(self -> in == NULL){
+        self->in = filename;
+    }else{
+        free(self-> in);
+        self->in = filename;
+    }
 }
+
 void scommand_set_redir_out(scommand self, char * filename) {
     assert(self != NULL);
-    self->out = filename;
+    if(self -> out == NULL){
+        self->out = filename;
+    }else{
+       free(self -> out);
+       self->out = filename; 
+    }
 }
 
 /* Proyectores */
@@ -158,41 +176,23 @@ char * scommand_get_redir_out(const scommand self){ //benja otra vez
 
 char * scommand_to_string(const scommand self){
     assert(self!=NULL);
-    GSList *tmp = NULL;
-    tmp = self -> comm_args;
+
     char *res = strdup("");
-    if(tmp != NULL){
-        char * aux1=res;
-        res = strmerge(res, tmp->data);
-        free(aux1);
-        tmp = tmp -> next;
-        while(tmp != NULL){
-            char * aux2=res;
-            res = strmerge(res, " ");
-            free(aux2);
-            char *aux3=res;
-            res = strmerge(res, tmp -> data); // usar puntero aux que apunte a res para que no qeuuede colgando
-            free(aux3);
-            tmp = tmp -> next; // usar libreria glib
-          
-        }
+
+    for(unsigned int i = 0u; i < scommand_length(self); ++i){
+        char *tmp = g_slist_nth_data(self -> comm_args, i);
+        res = strmergefree(res, tmp);
+        res = strmergefree(res, " ");
     }
+
     if(self -> out != NULL){
-        char *aux_in= res;
-        res = strmerge(res, " > ");
-        free(aux_in);
-        char *aux_in2=res;
-        res = strmerge(res, self -> out);
-        free(aux_in2);
+        res = strmergefree(res, " > ");
+        res = strmergefree(res, self -> out);
     }
 
     if(self -> in != NULL){
-        char *aux_out=res;
-        res = strmerge(res, " < ");
-        free(aux_out);
-        char *aux_out2=res;
-        res = strmerge(res, self -> in);
-        free (aux_out2);
+        res = strmergefree(res, " < ");
+        res = strmergefree(res, self -> in);
     }
     assert(scommand_is_empty(self) || scommand_get_redir_in(self)==NULL || scommand_get_redir_out(self)==NULL || strlen(res) > 0);
     return res;
@@ -249,19 +249,28 @@ pipeline pipeline_new(void){ //Benja
  */
 
 
-
 pipeline pipeline_destroy(pipeline self){  //Benja
     assert(self != NULL);
-    while (!pipeline_is_empty(self)){
-        scommand aux= pipeline_front(self);
+    while (self -> command_list != NULL){
         pipeline_pop_front(self);
-        aux=scommand_destroy (aux);
     }
     free(self);
     self=NULL;
     assert(self == NULL);
     return self;
 }
+// pipeline pipeline_destroy(pipeline self){  //Benja
+//     assert(self != NULL);
+//     while (!pipeline_is_empty(self)){
+//         scommand aux= pipeline_front(self);
+//         pipeline_pop_front(self);
+//         aux=scommand_destroy (aux);
+//     }
+//     free(self);
+//     self=NULL;
+//     assert(self == NULL);
+//     return self;
+// }
 /*
  * Destruye `self'.
  *   self: tubería a a destruir.
@@ -284,10 +293,17 @@ void pipeline_push_back(pipeline self, scommand sc){    //Facu (Revisar)
  * Ensures: !pipeline_is_empty()
  */
 
-void pipeline_pop_front(pipeline self){ // Facu (Revisar)
+void pipeline_pop_front(pipeline self){
     assert(self != NULL && !pipeline_is_empty(self));
-    self -> command_list = g_slist_remove(self->command_list, g_slist_nth_data(self->command_list, 0));
+    scommand_destroy(pipeline_front(self));
+    self->command_list = g_slist_delete_link(self->command_list, self->command_list);
 }
+
+// void pipeline_pop_front(pipeline self){ // Facu (Revisar)
+//     assert(self != NULL && !pipeline_is_empty(self));
+//     self -> command_list = g_slist_remove(self->command_list, g_slist_nth_data(self->command_list, 0));
+// }
+
 /*
  * Quita el comando simple de adelante de la secuencia.
  *   self: pipeline al cual sacarle el comando simple del frente.
@@ -359,38 +375,51 @@ bool pipeline_get_wait(const pipeline self){ // Benja
  *   Returns: ¿Hay que esperar en el pipeline self?
  * Requires: self!=NULL
  */
-
-char * pipeline_to_string(const pipeline self){ //Benja.
+char * pipeline_to_string(const pipeline self){
     assert(self != NULL);
-    GSList* command_list = self->command_list ;
-    char *result = strdup(""); //Esta funcion lo que hace es inicializa y duplica un string.
+    char *result = strdup("");
 
-    if (command_list != NULL) {
-
-        char *aux = scommand_to_string(g_slist_nth_data(command_list,0u));
-        char *aux1= result;
-        result = strmerge(result,aux);
-        free (aux1);
-
-        for (unsigned int i = 1u; i < pipeline_length(self); i++) {
-            char* aux2= result;
-            result = strmerge(result, " | ");
-            free(aux2);
-            aux = scommand_to_string(g_slist_nth_data(command_list,i));
-            char* aux3=result;
-            result = strmerge(result, aux);
-            free(aux3);
+    for (unsigned int i = 0u; i < g_slist_length(self->command_list); ++i){
+        scommand current_scommand = g_slist_nth_data(self->command_list, i);
+        char *simple_command = scommand_to_string(current_scommand);
+        result = strmergefree(result, simple_command);
+        if(i != g_slist_length(self->command_list) - 1u){
+            result = strmergefree(result, "| ");
         }
+        free(simple_command);
+    }
 
-        if (!pipeline_get_wait(self)) 
-            
-            result = strmerge(result, "&");
-        }
-    
+    if(!pipeline_get_wait(self)){
+        result = strmergefree(result, "&");
+    }
     assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result) > 0);
+    return (result);
+}
+// char * pipeline_to_string(const pipeline self){ //Benja.
+//     assert(self != NULL);
+//     GSList* command_list = self->command_list ;
+//     char *result = strdup(""); //Esta funcion lo que hace es inicializa y duplica un string.
 
-    return result;
-} 
+//     if (command_list != NULL) {
+
+//         char *aux = scommand_to_string(g_slist_nth_data(command_list,0u));
+//         result = strmergefree(result, aux);
+
+//         for (unsigned int i = 0u; i < pipeline_length(self); ++i) {
+//             result = strmergefree(result, " | ");
+//             aux = scommand_to_string(g_slist_nth_data(command_list,i));
+//             result = strmergefree(result, aux);
+//         }
+
+//         if (!pipeline_get_wait(self)){
+//             result = strmergefree(result, "&");
+//         }
+//     }
+    
+//     assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result) > 0);
+
+//     return result;
+// } 
 /* Pretty printer para hacer debugging/logging.
  * Genera una representación del pipeline en una cadena (aka "serializar").
  *   self: pipeline a convertir.
