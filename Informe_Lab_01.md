@@ -19,6 +19,7 @@ Asimismo para el control de versionado utilizamos la plataforma *bitbucket*
 
 
 
+
 # Contenido
 
 * [Modulos e implemetaciones](#Módulos-e-implementaciones)
@@ -72,7 +73,7 @@ En este encabezado se encuentra la interfaz del modulo `parser` la cual ya se en
 En este encabezado se encuentra la interfaz del modulo `parsing` cuya implementacion se encuentra en el encabezado `parsing.c`
 
 ### `Parsing.c`
-En este encabezado se encuentran implementadas las funciones `parse_pipeline` y `static scommand parse_scommand`.
+En este encabezado se encuentran implementadas las funciones `parse_pipeline` y `scommand parse_scommand`.
 
 
 La funcion `parse_scommand` es de caracter estatico y se encarga de armar una instancia del tipo `scommand` con sus respectivos comandos, argumentos y redirectores. En caso de que despues de un redirector no haya nada esto devuelve NULL ya que no estaria respetando la sintaxis correcta.
@@ -182,7 +183,7 @@ En `builtin.c` se debe definir `run_exit` como
 60 |     exit(2);
 61 |    //quit = true;
 62 | }
-````
+```
 comentando la asignación de `quit = true;`
 
 Luego hay que comentar la aparicion de `quit` como variable global
