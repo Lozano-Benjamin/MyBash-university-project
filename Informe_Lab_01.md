@@ -132,10 +132,10 @@ En `mybash.c` también incluimos parte del código que se encarga de mostrar el 
 
 ## Tests
 * [Exit normal no compila en ciertas maquinas pero exit corregido compila pero agrega un fallo de test](#Solución-de-error-de-compatibilidad)
-* Hay dos tests fallidos que trata de pipes pero creemos que estan "cruzados" (se espera que el hijo ejecute el primer comando mientas que el padre ejecute el segundo pero el nuestro esta al reves)
-* Hay un error de test relacionado al background y los hijos. Con cambiar un wait se soluciona, pero ese wait si se saca se bugea el prompt por el resto de la ejecución. (wait de linea 237 de execute.c)
-* Un error del chdir que no terminamos de entender.
-* Otro error del pipe que aún menos idea
+* Hay un error de test relacionado al background y los hijos. Con cambiar un wait se soluciona, pero ese wait si se saca se bugea el prompt por el resto de la ejecución.
+* Un error del chdir que creemos que se maneja por la libreria que usamos para el chdir.
+* Error del pipeline_to_sting.
+
 
 
 # Solución de error de compatibilidad
