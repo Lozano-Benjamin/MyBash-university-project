@@ -405,7 +405,7 @@ char * pipeline_to_string(const pipeline self){ //Benja.
         char *aux = scommand_to_string(g_slist_nth_data(command_list,0u));
         result = strmergefree(result, aux);
 
-        for (unsigned int i = 0u; i < pipeline_length(self); ++i) {
+        for (unsigned int i = 1u; i < pipeline_length(self); ++i) {
             result = strmergefree(result, " | ");
             aux = scommand_to_string(g_slist_nth_data(command_list,i));
             result = strmergefree(result, aux);
