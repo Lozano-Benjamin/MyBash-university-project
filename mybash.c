@@ -16,8 +16,8 @@
 
 
 static void show_prompt(void) {
-    char cwd[100];
-    getcwd(cwd, 100);
+    char cwd[1024];
+    getcwd(cwd, 1024);
     char host[1024];
     gethostname(host, 1024);
     char user[1024];
