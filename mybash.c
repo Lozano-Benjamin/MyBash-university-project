@@ -12,7 +12,7 @@
 
 #define ANSI_COLOR_RESET   "\x1b[0m"
 #define COLOR_HOST "\033[38;2;153;255;51m"
-#define COLOR_PATH "\033[38;2;153;4;255m"
+#define COLOR_PATH "\033[38;2;153;204;255m"
 
 
 static void show_prompt(void) {
