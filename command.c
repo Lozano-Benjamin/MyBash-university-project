@@ -25,7 +25,7 @@ struct pipeline_s {
 
 scommand scommand_new(void) {
 
-    scommand self = malloc(sizeof(struct scommand_s));
+    scommand self = malloc(sizeof(struct scommand_s)); /* Reservamos memoria e inicializamos todo en NULL */
     self->comm_args = NULL;
     self->out = NULL;
     self->in = NULL;
@@ -41,10 +41,11 @@ scommand scommand_new(void) {
 scommand scommand_destroy(scommand self){
     assert(self != NULL);
 
-    g_slist_free_full(self->comm_args, free); //usar pop
-    self->comm_args = NULL;
+    g_slist_free_full(self->comm_args, free); /* Aca utilizamos una funcion de GLIB que se encarga de liberar todos los elementos
+                                                de la lista utilizando free(), en este caso funciona porque son punteros. */
+    self->comm_args = NULL; /* Setteamos en NULL */
 
-    free(self->in);
+    free(self->in); /* De aca al return, simplemente liberamos los punteros y setteamos en NULL */
     self->in = NULL;
 
     free(self->out);
@@ -60,20 +61,14 @@ scommand scommand_destroy(scommand self){
 
 /* Modificadores */
 
-void scommand_push_back(scommand self, char * argument){ //ayala
+void scommand_push_back(scommand self, char * argument){   
     assert(self != NULL && argument != NULL);
-    self -> comm_args = g_slist_append(self->comm_args, argument);
+    self -> comm_args = g_slist_append(self->comm_args, argument);  /* Esta funcion agrega elementos por detras de la GSList*/
     assert(!scommand_is_empty(self));
 } 
-/*
- * Agrega por detrás una cadena a la secuencia de cadenas.
- *   self: comando simple al cual agregarle la cadena.
- *   argument: cadena a agregar. El TAD se apropia de la referencia.
- * Requires: self!=NULL && argument!=NULL
- * Ensures: !scommand_is_empty()
- */
 
 
+/* Version rota del Pop NO ELIMINAR hasta poder arreglar los problemas que nos trae. */
 // void scommand_pop_front(scommand self){
 //     assert(self != NULL && !scommand_is_empty(self));
 //     char *front = g_slist_nth_data(self->comm_args, 0);
@@ -81,21 +76,18 @@ void scommand_push_back(scommand self, char * argument){ //ayala
 //     self->comm_args = g_slist_delete_link(self->comm_args, self->comm_args);
 // }
 
-void scommand_pop_front(scommand self){     //ayala
+
+void scommand_pop_front(scommand self){    
     assert(self != NULL && !scommand_is_empty(self));
-    self -> comm_args = g_slist_remove(self->comm_args,g_slist_nth_data(self->comm_args, 0));
+    self -> comm_args = g_slist_remove(self->comm_args,g_slist_nth_data(self->comm_args, 0)); /* Elimina el elemento de la GSList en indice 0 */
 }
-/*
- * Quita la cadena de adelante de la secuencia de cadenas.
- *   self: comando simple al cual sacarle la cadena del frente.
- * Requires: self!=NULL && !scommand_is_empty(self)
- */
+
 
 void scommand_set_redir_in(scommand self, char * filename) {
     assert(self != NULL);
-    if(self -> in == NULL){
+    if(self -> in == NULL){ /* En caso de que no haya nada asignado al *in, se asigna directo */
         self->in = filename;
-    }else{
+    }else{                  /* En caso de que haya algun elemento, se libera y luego se reasigna. */
         free(self-> in);
         self->in = filename;
     }
@@ -103,9 +95,9 @@ void scommand_set_redir_in(scommand self, char * filename) {
 
 void scommand_set_redir_out(scommand self, char * filename) {
     assert(self != NULL);
-    if(self -> out == NULL){
+    if(self -> out == NULL){/* En caso que no haya nada asignado al *out, se asigna directo */
         self->out = filename;
-    }else{
+    }else{                  /* En caso de que haya algun elemento, se libera y luego se reasigna. */
        free(self -> out);
        self->out = filename; 
     }
@@ -113,306 +105,164 @@ void scommand_set_redir_out(scommand self, char * filename) {
 
 /* Proyectores */
 
-/*
- * Indica si la secuencia de cadenas tiene longitud 0.
- *   self: comando simple a decidir si está vacío.
- *   Returns: ¿Está vacío de cadenas el comando simple?
- * Requires: self!=NULL
- */
 
-bool scommand_is_empty(const scommand self){ //fabro 
+
+bool scommand_is_empty(const scommand self){ 
     assert (self !=NULL);
-    return (g_slist_length(self->comm_args) == 0);
+    return (g_slist_length(self->comm_args) == 0); /* esta funcion nos devuelve el length de la lista de argumentos, 
+                                                    chequeamos que sea 0. */
 }
 
-/*
- * Da la longitud de la secuencia cadenas que contiene el comando simple.
- *   self: comando simple a medir.
- *   Returns: largo del comando simple.
- * Requires: self!=NULL
- * Ensures: (scommand_length(self)==0) == scommand_is_empty()
- *
- */
 
-unsigned int scommand_length(const scommand self){ //sssj (Poner ensures)
+
+unsigned int scommand_length(const scommand self){ 
     assert (self !=NULL);
-    unsigned int length= g_slist_length(self->comm_args);
+    unsigned int length= g_slist_length(self->comm_args); /* esta funcion calcula el largo de la lista. */
     return length;
 }
 
 
 
-char * scommand_front(const scommand self){ //benja 
+char * scommand_front(const scommand self){ 
     assert(self != NULL && !scommand_is_empty(self));
-    char * result = g_slist_nth_data(self->comm_args, 0); //Encontre esta funcion, dice que devuelve el dato entonces creo que va bien. Si no,
-    assert(result != NULL);                                // g_slist_nth puede servir, habria que checkear.
+    char * result = g_slist_nth_data(self->comm_args, 0);  /* Esta funcion devuelve el elemento que se encuentre en el indice 0
+                                                                de la lista */
+    assert(result != NULL);                                
     return result;
 } 
-/*
- * Toma la cadena de adelante de la secuencia de cadenas.
- *   self: comando simple al cual tomarle la cadena del frente.
- *   Returns: cadena del frente. La cadena retornada sigue siendo propiedad
- *     del TAD, y debería considerarse inválida si luego se llaman a
- *     modificadores del TAD. Hacer una copia si se necesita una cadena propia.
- * Requires: self!=NULL && !scommand_is_empty(self)
- * Ensures: result!=NULL
- */
 
-char * scommand_get_redir_in(const scommand self){ //benja de nueva
+
+char * scommand_get_redir_in(const scommand self){ 
     assert(self != NULL);
-    return self->in;
+    return self->in; /* Devolvemos el string al que apunta *in */
 } 
-char * scommand_get_redir_out(const scommand self){ //benja otra vez
+char * scommand_get_redir_out(const scommand self){ 
     assert(self != NULL);
-    return self->out;
+    return self->out; /* Devolvemos el string al que apunta *out */
 }
-/*
- * Obtiene los nombres de archivos a donde redirigir la entrada (salida).
- *   self: comando simple a decidir si está vacío.
- *   Returns: nombre del archivo a donde redirigir la entrada (salida)
- *  o NULL si no está redirigida.
- * Requires: self!=NULL
- */
 
 char * scommand_to_string(const scommand self){
     assert(self!=NULL);
 
-    char *res = strdup("");
+    char *res = strdup(""); /* Inicializamos res como string en "", strdup ya realiza
+                                  la reserva de memoria. */
 
     for(unsigned int i = 0u; i < scommand_length(self); ++i){
-        char *tmp = g_slist_nth_data(self -> comm_args, i);
-        res = strmergefree(res, tmp);
-        res = strmergefree(res, " ");
+        char *tmp = g_slist_nth_data(self -> comm_args, i); /* Tomamos elemento en posicion i de la GSList */
+        res = strmergefree(res, tmp);                /* concatenamos res con el i-esimo argumento */
+        res = strmergefree(res, " ");               /* En cada iteracion agregamos un espacio */
     }
 
     if(self -> out != NULL){
-        res = strmergefree(res, " > ");
-        res = strmergefree(res, self -> out);
+        res = strmergefree(res, " > ");     /* En caso de haber un archivo output, concatenamos el simbolo. */
+        res = strmergefree(res, self -> out); /* Concatenamos el contenido de *out */
     }
 
     if(self -> in != NULL){
-        res = strmergefree(res, " < ");
-        res = strmergefree(res, self -> in);
+        res = strmergefree(res, " < "); /* En caso de haber un archivo input, concatenamos el simbolo */
+        res = strmergefree(res, self -> in); /* Concatenamos el contenido de *in */
     }
     assert(scommand_is_empty(self) || scommand_get_redir_in(self)==NULL || scommand_get_redir_out(self)==NULL || strlen(res) > 0);
     return res;
 }
 
-
-
-/* Preety printer para hacer debugging/logging.
- * Genera una representación del comando simple en un string (aka "serializar")
- *   self: comando simple a convertir.
- *   Returns: un string con la representación del comando simple similar
- *     a lo que se escribe en un shell. El llamador es dueño del string
- *     resultante.
- * Requires: self!=NULL
- * Ensures: scommand_is_empty(self) ||
- *   scommand_get_redir_in(self)==NULL || scommand_get_redir_out(self)==NULL ||
- *   strlen(result)>0
- */
-
-
-/*
- * pipeline: tubería de comandos.
- * Ejemplo: ls -l *.c > out < in  |  wc  |  grep -i glibc  &
- * Secuencia de comandos simples que se ejecutarán en un pipeline,
- *  más un booleano que indica si hay que esperar o continuar.
- *
- * Una vez que un comando entra en el pipeline, la memoria pasa a ser propiedad
- * del TAD. El llamador no debe intentar liberar la memoria de los comandos que
- * insertó, ni de los comandos devueltos por pipeline_front().
- * pipeline_to_string() pide memoria internamente y debe ser liberada
- * externamente.
- *
- * Externamente se presenta como una secuencia de comandos simples donde:
- *           ______________________________
- *  front -> | scmd1 | scmd2 | ... | scmdn | <-back
- *           ------------------------------
- */
-
-
-
 pipeline pipeline_new(void){ //Benja
-    pipeline result = malloc(sizeof(struct pipeline_s));
+    pipeline result = malloc(sizeof(struct pipeline_s)); /* Reservamos memoria e inicializamos la lista de commands en NULL */
     result->command_list = NULL;
-    result->wait = true;
+    result->wait = true;    /* Inicializamos la espera en true */
     assert(result != NULL  && pipeline_is_empty(result) && pipeline_get_wait( result));
     return result;
 }
-/*
- * Nuevo `pipeline', sin comandos simples y establecido para que espere.
- *   Returns: nuevo pipeline sin comandos simples y que espera.
- * Ensures: result != NULL
- *  && pipeline_is_empty(result)
- *  && pipeline_get_wait(result)
- */
 
 
-// pipeline pipeline_destroy(pipeline self){  //Benja
-//     assert(self != NULL);
-//     while (self -> command_list != NULL){
-//         pipeline_pop_front(self);
-//     }
-//     free(self);
-//     self=NULL;
-//     assert(self == NULL);
-//     return self;
-// }
+
 pipeline pipeline_destroy(pipeline self){  //Benja
     assert(self != NULL);
     while (!pipeline_is_empty(self)){
-        scommand aux= pipeline_front(self);
-        pipeline_pop_front(self);
-        aux=scommand_destroy (aux);
+        scommand aux= pipeline_front(self); /* Agarramos el scommand ubicado al frente */
+        pipeline_pop_front(self);           /* Liberamos el primer elemento */
+        aux=scommand_destroy (aux);     /* Destruimos el scommand que agarramos primero. */
     }
-    free(self);
-    self=NULL;
+    free(self); /* Liberamos el puntero a self */
+    self=NULL;  /* Setteamos en NULL */
     assert(self == NULL);
     return self;
 }
-/*
- * Destruye `self'.
- *   self: tubería a a destruir.
- * Requires: self != NULL
- * Ensures: result == NULL
- */
 
 /* Modificadores */
 
-void pipeline_push_back(pipeline self, scommand sc){    //Facu (Revisar)
+void pipeline_push_back(pipeline self, scommand sc){   
     assert(self != NULL && sc != NULL);
-    self -> command_list = g_slist_append(self->command_list, sc);
+    self -> command_list = g_slist_append(self->command_list, sc);  /* Agregamos a la lista de scommands el comando sc */
     assert(!pipeline_is_empty(self));
 }
-/*
- * Agrega por detrás un comando simple a la secuencia.
- *   self: pipeline al cual agregarle el comando simple.
- *   sc: comando simple a agregar. El TAD se apropia del comando.
- * Requires: self!=NULL && sc!=NULL
- * Ensures: !pipeline_is_empty()
- */
 
+/* Esto esta aun en arreglos, revisar. */
 // void pipeline_pop_front(pipeline self){
 //     assert(self != NULL && !pipeline_is_empty(self));
 //     scommand_destroy(pipeline_front(self));
 //     self->command_list = g_slist_delete_link(self->command_list, self->command_list);
 // }
 
-void pipeline_pop_front(pipeline self){ // Facu (Revisar)
+void pipeline_pop_front(pipeline self){ 
     assert(self != NULL && !pipeline_is_empty(self));
     self -> command_list = g_slist_remove(self->command_list, g_slist_nth_data(self->command_list, 0));
 }
 
-/*
- * Quita el comando simple de adelante de la secuencia.
- *   self: pipeline al cual sacarle el comando simple del frente.
- *      Destruye el comando extraido.
- * Requires: self!=NULL && !pipeline_is_empty(self)
- */
+
 
 void pipeline_set_wait(pipeline self, const bool w) {
     assert(self != NULL);
-    self->wait = w;
+    self->wait = w;     /* Cambiamos el valor booleano de wait por w. */
 }
 
 /* Proyectores */
 
 bool pipeline_is_empty(const pipeline self) {
     assert(self != NULL);
-    return (self->command_list == NULL);
+    return (self->command_list == NULL);   /* Si la lista de scommands esta vacia, entonces la pipe tambien. */
 }
-/*
- * Indica si la secuencia de comandos simples tiene longitud 0.
- *   self: pipeline a decidir si está vacío.
- *   Returns: ¿Está vacío de comandos simples el pipeline?
- * Requires: self!=NULL
- */
 
-unsigned int pipeline_length(const pipeline self){ // Fabri (Revisar y poner Ensures)
+
+unsigned int pipeline_length(const pipeline self){ 
     assert(self !=NULL);
-    unsigned int length=0;
-    for (unsigned int i=0; i < g_slist_length(self->command_list); ++i){
-        ++length;
-    }
-
+    unsigned int length= g_slist_length(self->command_list);    /* Funcion que calcula el tam de la GSList de scommands */
     assert((length==0) == pipeline_is_empty(self));
     return length;
 }
-/*
- * Da la longitud de la secuencia de comandos simples.
- *   self: pipeline a medir.
- *   Returns: largo del pipeline.
- * Requires: self!=NULL
- * Ensures: (pipeline_length(self)==0) == pipeline_is_empty()
- *
- */
 
-scommand pipeline_front(const pipeline self){ // Fabri (Revisar y poner Ensures)
+scommand pipeline_front(const pipeline self){ 
     assert (self!=NULL && !pipeline_is_empty(self));
-    scommand result = g_slist_nth_data(self->command_list,0);
+    scommand result = g_slist_nth_data(self->command_list,0);   /* Obtenemos el scommand ubicado en indice 0 (El frente) */
     assert(result!=NULL); 
     return result;
 }
-/*
- * Devuelve el comando simple de adelante de la secuencia.
- *   self: pipeline al cual consultar cual es el comando simple del frente.
- *   Returns: comando simple del frente. El comando devuelto sigue siendo
- *      propiedad del TAD.
- *      El resultado no es un "const scommand" ya que el llamador puede
- *      hacer modificaciones en el comando, siempre y cuando no lo destruya.
- * Requires: self!=NULL && !pipeline_is_empty(self)
- * Ensures: result!=NULL
- */
 
-bool pipeline_get_wait(const pipeline self){ // Benja
+
+bool pipeline_get_wait(const pipeline self){ 
     assert( self != NULL);
-    return self->wait;
+    return self->wait;  /* Devolvemos el valor de el campo wait */
 }
-/*
- * Consulta si el pipeline tiene que esperar o no.
- *   self: pipeline a decidir si hay que esperar.
- *   Returns: ¿Hay que esperar en el pipeline self?
- * Requires: self!=NULL
- */
-// char * pipeline_to_string(const pipeline self){
-//     assert(self != NULL);
-//     char *result = strdup("");
 
-//     for (unsigned int i = 0u; i < g_slist_length(self->command_list); ++i){
-//         scommand current_scommand = g_slist_nth_data(self->command_list, i);
-//         char *simple_command = scommand_to_string(current_scommand);
-//         result = strmergefree(result, simple_command);
-//         if(i != g_slist_length(self->command_list) - 1u){
-//             result = strmergefree(result, "| ");
-//         }
-//         free(simple_command);
-//     }
-
-//     if(!pipeline_get_wait(self)){
-//         result = strmergefree(result, "&");
-//     }
-//     assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result) > 0);
-//     return (result);
-// }
 char * pipeline_to_string(const pipeline self){ //Benja.
     assert(self != NULL);
     GSList* command_list = self->command_list ;
-    char *result = strdup(""); //Esta funcion lo que hace es inicializa y duplica un string.
+    char *result = strdup(""); //Inicializamos res como "", ya hace la reserva de memoria.
 
     if (command_list != NULL) {
 
-        char *aux = scommand_to_string(g_slist_nth_data(command_list,0u));
-        result = strmergefree(result, aux);
+        char *aux = scommand_to_string(g_slist_nth_data(command_list,0u));  /* agarramos el primer command y lo metemos en aux */
+        result = strmergefree(result, aux);                                /* concatenamos con "" */
 
         for (unsigned int i = 1u; i < pipeline_length(self); ++i) {
-            result = strmergefree(result, " | ");
-            aux = scommand_to_string(g_slist_nth_data(command_list,i));
-            result = strmergefree(result, aux);
+            result = strmergefree(result, " | ");   /* En cada iteracion concatenamos una pipe */
+            aux = scommand_to_string(g_slist_nth_data(command_list,i)); /* agarro el i-esimo arg */
+            result = strmergefree(result, aux); /* concateno el i-esimo arg */
         }
 
         if (!pipeline_get_wait(self)){
-            result = strmergefree(result, "&");
+            result = strmergefree(result, "&"); /* En caso de que querramos ejecutar el background
+                                                            concatenamos & al final. */
         }
     }
     
@@ -420,12 +270,3 @@ char * pipeline_to_string(const pipeline self){ //Benja.
 
     return result;
 } 
-/* Pretty printer para hacer debugging/logging.
- * Genera una representación del pipeline en una cadena (aka "serializar").
- *   self: pipeline a convertir.
- *   Returns: una cadena con la representación del pipeline similar
- *     a lo que se escribe en un shell. Debe destruirla el llamador.
- * Requires: self!=NULL
- * Ensures: pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result)>0
- */
-
