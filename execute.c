@@ -98,6 +98,23 @@ static void change_out(scommand cmd) {
     }
 }
 
+static void exec_single(scommand cmd) {
+    if (scommand_get_redir_in(cmd) != NULL) {   //veo si tiene redir_in
+        change_in(cmd);
+    }
+    if (scommand_get_redir_out(cmd) != NULL) {  //veo si tiene redir_out
+        change_out(cmd);
+    }
+
+    char** argv = tomar_args(cmd);
+    int errorcito = execvp(argv[0], argv); //argv[0] carga el nombre del comando (ls por ejemplo) y argv todos los argumentos (incluye ls al inicio y NULL al final)
+    if (errorcito < 0) {
+        printf("pucha, no se encontró el comando :(\n");
+        exit(EXIT_FAILURE);
+    }
+                
+}  
+
 static void single_command_execution(scommand cmd) {
     assert(cmd != NULL);
 
@@ -111,26 +128,17 @@ static void single_command_execution(scommand cmd) {
             printf("Error del fork en single_command_execution \n");
         }
         else if (pid == 0) {    //forkeo
-            if (scommand_get_redir_in(cmd) != NULL) {   //veo si tiene redir_in
-                change_in(cmd);
-            }
-            if (scommand_get_redir_out(cmd) != NULL) {  //veo si tiene redir_out
-                change_out(cmd);
-            }
-
-            char** argv = tomar_args(cmd);
-            int errorcito = execvp(argv[0], argv); //argv[0] carga el nombre del comando (ls por ejemplo) y argv todos los argumentos (incluye ls al inicio y NULL al final)
-            if (errorcito < 0) {
-                printf("pucha, no se encontro el comando :(\n");
-                exit(EXIT_FAILURE);
-            }
+            exec_single(cmd);
         }
         else {
             //printf("soy el papi \n");
         }                        
     }                           
-                                
-}
+}                        
+
+    
+
+
 
 static void multiple_command_execution(pipeline apipe) {
     /*este multiple solo puede ejecutar hasta dos comandos
@@ -144,51 +152,62 @@ static void multiple_command_execution(pipeline apipe) {
     scommand snd_command = pipeline_front(apipe);   //guardo el segundo comando
     assert(snd_command != NULL);
 
-    pid_t pid_a = fork();   //fork para ejecutar los pipes y que no se termine la cosa
-    if (pid_a < 0) {
-        printf("Error al forkear \n");
-    }
-    else if (pid_a == 0){        //el hijo ejecuta los pipes y el padre espera
-        int p[2];               //array del pipe
 
-        pipe(p);
-        pid_t pid = fork(); //forkeo los comandos a ejecutar en el pipe
-        if (pid < 0) {
-            printf("Error al forkear \n");
+    /*
+    * Coreccion del execute
+    * La idea es un fork por comando
+    * suerte porfa
+    */
+
+   int p[2];
+   int err_pipe = pipe(p);
+   if (err_pipe < 0) {printf("error al pipear");}
+
+   pid_t pid = fork();
+   if (pid < 0) {
+        printf("error del tenedor \n");
+   }
+   else if (pid == 0) {
+        int err_dup = dup2(p[1],1);
+        if (err_dup < 0) {
+            printf("error en el dup2 \n");
+            exit(EXIT_FAILURE);
         }
-
-        if (pid == 0) {     //se ejecuta el segundo comando (toma como input el output del otro)
-
-            int err_dup = dup2(p[0],0);
-            if (err_dup < 0) {
-                printf("Error al cambiar fd \n");
-            }
-            else {
-                close(p[0]);
-                close(p[1]);
-                single_command_execution(snd_command);
-                exit(EXIT_SUCCESS);
-            }
+        else {
+            close(p[0]);
+            close(p[1]);
+            exec_single(fst_command); //el hijo se muere en el execvp
+            //exit(EXIT_SUCCESS);
+            printf("no se deberia llegar a este print \n");
         }
-        else if (pid > 0){  //se ejecuta el primer comando (da el input al otro)
-            
-            int err_dup_a = dup2(p[1],1);
-            if (err_dup_a < 0) {
-                printf("Error al cambiar fd \n");
-            }
-            else {
-                close(p[0]);
-                close(p[1]); 
-                single_command_execution(fst_command);
-                wait(NULL);
-                exit(EXIT_SUCCESS);
-            }
-         }
-    }
-    else {
-        wait(NULL);     //espero a los beibis
-    }
+   }
+
+   pid_t pid2 = fork();
+   if (pid2 < 0) {
+        printf("Error con el tenedor \n");
+   }
+   else if (pid2 == 0) {
+        int err_dup = dup2(p[0],0);
+        if (err_dup < 0) {
+            printf("error en el dup2 \n");
+            exit(EXIT_FAILURE);
+        }
+        else {
+            close(p[0]);
+            close(p[1]);
+            exec_single(snd_command); //el hijo se muere en el execvp
+            printf("no se deberia llegar a este print \n");
+        }
+   }
+
+   else /*(pid2 > 0)*/ {
+        //el padre ni idea
+        close(p[0]);
+        close(p[1]);
+        // wait(NULL); //este wait no tiene sentido pues no espera a nadie
+   }
 }
+
 
 static void execute_foreground(pipeline apipe) {
     //vemos si es simple o multiple
@@ -197,6 +216,7 @@ static void execute_foreground(pipeline apipe) {
     }
     else if (pipeline_length(apipe) == 2){
         multiple_command_execution(apipe);              //ejecuto el comando multiple
+        //wait(NULL); //este wait hace que se muestre bien el prompt pero hace que ande mal la otra cosa
     }
     else {
         printf("Lo sentimos, solo hasta dos comandos pipeados )): (ejemplo: ls -l | wc) \n");
@@ -234,7 +254,7 @@ static void execute_background(pipeline apipe){
         /*Proceso padre, va a esperar a que se termine el fork de su hijo,
           entonces solo necesitamos hacer un Wait al primero porque internamente los
           demas procesos padre esperaran a sus hijos. */
-        wait(NULL); //este wait hace que el prompt se muestre bien pero hace que falle un error del test 
+        //wait(NULL); //este wait hace que el prompt se muestre bien pero HACE QUE NO ANDE EL BACKGROUND LOL XD
     }
 }
 
@@ -254,6 +274,7 @@ void execute_pipeline(pipeline apipe) {
     }
     else {
         execute_background(apipe); //el back se ejecuta con el fore, una flasheada
+        wait(NULL); //ESTE WAIT CORRIGÉ EL ERROR DEL WAIT DE LA LINEA 303
     }
-
+    wait(NULL); //este hace que no se bugee el prompt en pipes , espero que no genere bugs
 }
