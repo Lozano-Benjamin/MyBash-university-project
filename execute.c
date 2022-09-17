@@ -275,8 +275,10 @@ void execute_pipeline(pipeline apipe) {
     }
     else {
         execute_background(apipe); //el back se ejecuta con el fore, una flasheada
-        wait(NULL); //ESTE WAIT CORRIGÉ EL ERROR DEL WAIT DE LA LINEA 303
+        
+        wait(NULL); //ESTE WAIT CORRIGÉ EL ERROR DEL WAIT DE LA LINEA 303 //reubicar este wait, saca un test
     }
+    //wait(NULL); //reemplaza a los que estan en los ifs, de todas formas tira un error el test ????
     if (n == 2) {
         wait(NULL); //este hace que no se bugee el prompt en pipes , espero que no genere bugs
     } //es una solucion medio ad hoc, no lo voy a negar, pero soluciona un test relacionado a la cantidad de waits
