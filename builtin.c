@@ -23,12 +23,12 @@ void show_prompt(void) {
     char cwd[1024]; /* Creamos un string para el path */
     getcwd(cwd, 1024);  /* Esta funcion nos devuelve el path y la guarda en el array cwd */
 
-    char host[1024];     /* Creamos un string para el host */
-    gethostname(host, 1024);   /* Esta funcion nos devuelve el nombre del host y 
+    char host[256];     /* Creamos un string para el host */
+    gethostname(host, 256);   /* Esta funcion nos devuelve el nombre del host y 
                                             lo guarda en el string host */
 
-    char user[1024];    /* Creamos un string para el user */
-    getlogin_r(user, 1024); /* Esta funcion nos devuelve el usuario loggeado y 
+    char user[256];    /* Creamos un string para el user */
+    getlogin_r(user, 256); /* Esta funcion nos devuelve el usuario loggeado y 
                                             lo guarda en el string user */
 
 
@@ -59,13 +59,23 @@ static void color_change(scommand cmd) {
             strcpy(COLOR_HOST,"\033[38;2;92;142;148m");
             strcpy(COLOR_PATH,"\033[38;2;220;209;226m");
         }
+        else if (strcmp(palet, "3") == 0) { /* Si es 3, se usa la paleta invierno gris. */
+            strcpy(COLOR_TEXT,"\033[38;2;248;177;147m");
+            strcpy(COLOR_HOST,"\033[38;2;244;114;128m");
+            strcpy(COLOR_PATH,"\033[38;2;195;118;138m");
+        }
         else {  /* Si el argumento de paleta no es 0,1,2 se da un aviso. */
             printf("Paleta invalida.\n Paletas disponibles del 0 al 2\n");
         }
 
     }
     else {  /* Si no se da el formato correcto se larga un aviso. */
-        printf("Se puede cambiar la paleta de colores de mybash usando color con un número del 0 al 2\nPaletas disponibles: \n0 : defecto\n1 : 'hacker'\n2 : invierno gris \n");
+        printf("Se puede cambiar la paleta de colores de mybash usando color con un número del 0 al 3\n"
+        "Paletas disponibles: \n"
+        "0 : defecto\n"
+        "1 : 'hacker'\n"
+        "2 : invierno gris\n"
+        "3 : rosita?\n");
     }
 
 }
@@ -108,8 +118,7 @@ static void run_help(scommand cmd) {
     "Comandos internos:\n"
     " -help: es este mensaje :) \n -exit: sale de la consola (porfavor no lo hagas :c )\n "
     "-cd: cambia de directorio, usando path relativo o absoluto (ej: /home/USUARIO/Documentos/)\n "
-    "-color: cambia la paleta de colores. Contamos actualmente con 3 paletas.\n"
-    " Por defecto, arg = 0, hacker, arg = 1, invierno gris, arg = 2\n");
+    "-color: cambia la paleta de colores. Usar 'color' para ver la lista. \n");
 }
 
 static void run_exit(scommand cmd)  {

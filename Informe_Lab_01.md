@@ -1,8 +1,8 @@
-# Informe Lab 01
-- Ayala Facundo
-- Bonfils Gastón Tomás 
+# Informe Lab 01 - Grupo 18
+- Ayala Facundo (facundo.ayala@mi.unc.edu.ar)
+- Bonfils Gastón Tomás (gastonbonfils@mi.unc.edu.ar)
 - Longhi Heredia Fabrizio Mateo
-- Lozano Benjamín
+- Lozano Benjamín (benjamin.lozano@mi.unc.edu.ar)
 
 # Introduccion
 Se nos asigno la tarea de codificar una shell al estilo de bash (*Born Again Shell*) a la que denominamos *mybash*, utilizando el lenguaje C, a realizar en un periodo de aproximadamente 4 semanas, las cuales nos dedicamos a distribuirnos tareas e investigar acerca del funcionamiento del bash de linux para replicar su comportamiento. Tambien nos dedicamos a aprender a trabajar en equipo con git (algunos no habian usado nunca git), coordinarnos y convivir con diferentes formas de programar. Fue nuestro primer proyecto en equipo. Logramos realizar una shell funcional con un prompt mejorado esteticamente. Aunque es una version muy basica, esperemos les guste y sea útil. 
@@ -29,10 +29,10 @@ Asimismo para el control de versionado utilizamos la plataforma *bitbucket*
     * [Execute](#Execute)
     * [myBash](#myBash)
 * [Solución de error de compatibilidad](#Solución-de-error-de-compatibilidad)
-    * [Versión que anda a la mitad](#Versión-que-anda-a-la-mitad)
+    * [Versión que no compila bien](#Versión-que-no-compila-bien)
     * [Versión que anda a todos pero con un test fallido](#Versión-que-anda-a-todos-pero-con-un-test-fallido)
 
-# Módulos e implementaciones
+# Módulos, implementaciones y tecnicas.
 
 ## Command
 El módulo command se encarga de implementar el TAD del `scommand` y del `pipeline`. Este módulo no fue complicado de hacer pues usamos las listas de la librería de `GLib` los cuales agilizaron la mayoría de funciones.
@@ -82,10 +82,13 @@ Por otro lado, la funcion `parse_pipeline` se encarga de crear una instancia del
 
 
 ## Builtin
-El módulo builtin se encarga de ejecutar los comandos internos que se quieran implementar. Nosotros decidimos implementar únicamente los comandos que se nos pidieron en un principio siendo ellos:
+El módulo builtin se encarga de ejecutar los comandos internos que se quieran implementar. Nosotros implementamos los comandos principales los cuales son:
 * `cd` para cambiar de directorio en el que trabaja
 * `help` para mostrar información en pantalla sobre el MyBash
-* `exit` para cerrar el programa\
+* `exit` para cerrar el programa  
+
+Además decidimos implementar un comando para cambiar el color del `prompt` y de la terminal.
+* `color` que dado un número se cambia los colores por otros de paletas hechas por nosotros  
 
 A la hora de implementar estos comandos se modularizo la función `bultin_run` de manera tal que al detectar el comando que se pasa directamente se ejecuta una función `run_XX` donde XX es cd, help o exit.
 
@@ -98,8 +101,12 @@ La función `run_cd` se implemento utilizando la función `syscall` importada de
 ### `exit`
 Al principio no entendiamos la manera de implementar `run_exit` pero luego trabajando en `mybash.c` vimos la variable `quit` que manejaba el loop de parseo de pipelines. En `builtin.c` globalizamos la variable `quit` para que el `run_exit` simplemente la cambiara a `true` y luego se cortaba el bucle del `main` de `mybash.c`.
 
+### `color`
+Para poder cambiar el color del prompt primero cambiamos de lugar la función `show_prompt` del módulo [mybash](#myBash) trayendola al `builtin.c` de manera que se nos haga mas fácil trabajar.   
+Para usar está función hay que llamarla como `color` seguida de un número del 0 al 3 el cual va a referenciar la paleta de colores que se usa. Para ver las posibles opciones de paletas de colores con llamar `color` sin ningún parámetro se muestra la lista. 
+
 ### `builtin_is_internal` y `builtin_alone`
-El trabajo de estas dos funciones es verificar si el comando pasado es interno o no. Para implementar `bultin_is_internal` simplemente comparamos el primer elemento del `scommand` que se les pasa y veíamos si era tanto `"cd"`, `"help"` o `"exit"`. Para `bultin_alone` se usa la función anterior y además se chequea si el largo del `pipeline` es 1. 
+El trabajo de estas dos funciones es verificar si el comando pasado es interno o no. Para implementar `bultin_is_internal` simplemente comparamos el primer elemento del `scommand` que se les pasa y veíamos si era igual cualquier comando interno. Para `bultin_alone` se usa la función anterior y además se chequea si el largo del `pipeline` es 1. 
 
 ## Execute
 El `execute` es el módulo encargado de la ejecución de los comandos mediante el uso de syscalls. En un principio se provee la función `execute pipeline` la cual se encarga de ejecutar el pipeline distinguiendo si se ejecuta en foreground o background, si es simple o múltiple y si tiene redirección de entrada o sálida. Para encargarnos de esto modularizamos la función de la siguiente manera:  
@@ -108,6 +115,7 @@ El `execute` es el módulo encargado de la ejecución de los comandos mediante e
 * Luego si es comando simple o pipeline utilizando `single_command_execution` y `multiple_command_execution`. Para tomar los argumentos del comando creamos la función `tomar_args` que pasa los argumentos del scommand a un array de strings.  
 * Y por último si tiene redireccionamientos de entrada o salida usando `change_in` y `change_out`.   
 
+Modularizamos el `execute` de esta manera para permitirnos poder trabajar sobre el módulo en momentos diferentes, pues nos dividimos las funciones entre los cuatro. 
 
 Lamentablemente, solo pudimos implementar hasta un pipeline de dos comandos, como por ejemplo `ls -l | wc`  
 
@@ -120,21 +128,19 @@ Por último, el módulo `mybash.c` se encarga de ir parseando y ejecutando los p
     * Si no es nulo, se ejecuta y pipe se destruye instantaneamente
 * Si en algún momento se ejecuta el comando `"exit"` cambiara la variable que mantiene el loop de parseo activo y se destruira el parser que registra los comandos para luego cerrar el programa
   
-### Prompt
-En `mybash.c` también incluimos parte del código que se encarga de mostrar el prompt en la terminal antes de ejecutar cada comando. Para ello se definieron ciertos colores y se obtuvieron el path al directorio actual, el nombre del usuario y el nombre del host. 
+# HERRAMIENTAS DE PROGRAMACION
+Utilizamos como editor de codigo a `Visual Estudio Code`, para el versionado de codigo utilizamos a `Git`, tambien para facilitar algunas veces utilizabamos el `source control` incluido en el editor previamente mencionado. Para compilar utilizabamos un archivo `makefile` incluido en el `kickstarter`. Para debuggear creamos archivos auxiliares que utilizaban todos las funciones del modulo a testear, compilabamos con el comando `gcc -Wall -Werror -Wextra -pedantic -std=gnu11 -c command.c $(pkg-config --cflags --libs glib-2.0) -lglib-2.0 && gcc -Wall -Werror -Wextra -pedantic -std=gnu11 -o self_command *.o main.c -lglib-2.0` donde el primer compilado es para las dependencias y el segundo para el archivo de test. Luego corriamos `gdb` para revisar los bugs. Luego otro tipo de analisis de errores se basaba en debuggear las funciones hasta que que pasen los test existentes en el archivo `makefile`.
 
-
+# DESARROLLO
 # Lista de problemas y tests fallidos
 ## Bugs notables
 * Se puede solucionar el error de la sintaxis inválida pero nuestro método hace que el enter solo (comando vacio) también salte en ese error (priorizamos estética en este caso)
-* Al hacer un pipe el prompt se muestra mal (solo por esa ejecución)
 
 
 ## Tests
 * [Exit normal no compila en ciertas maquinas pero exit corregido compila pero agrega un fallo de test](#Solución-de-error-de-compatibilidad)
 * Hay un error de test relacionado al background y los hijos. Con cambiar un wait se soluciona, pero ese wait si se saca se bugea el prompt por el resto de la ejecución.
-* Un error del chdir que creemos que se maneja por la libreria que usamos para el chdir.
-* Error del pipeline_to_sting.
+* Un test fallido del chdir que creemos que se maneja por la libreria que usamos para el chdir.
 
 
 
@@ -143,7 +149,7 @@ En nuestro grupo, la mitad de los integrantes tuvo problemas de compilación por
 
 Este problema tiene una solución, pero agrega un test fallido. 
 
-## Versión que anda a la mitad
+## Versión que no compila bien
 Esta es la versión que trae problemas de compilado a la mitad del grupo pero no agrega errores de tests ni de memory leaks
 
 En `bultin.h` hay que definir la variable global `quit` de la siguiente manera
