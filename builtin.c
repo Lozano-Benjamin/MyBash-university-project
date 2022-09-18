@@ -11,63 +11,60 @@
 #include <unistd.h> 
 #include <sys/syscall.h>
 #include <sys/types.h>
-
+/* Inicializacion global de colores del prompt */
 #define ANSI_COLOR_RESET   "\x1b[0m"
-char COLOR_TEXT[32] = "\x1b[0m";
-char COLOR_HOST[32] = "\033[38;2;153;255;51m";
-char COLOR_PATH[32] = "\033[38;2;153;204;255m";
+char COLOR_TEXT[32] = "\x1b[0m";    /* Colores del texto */
+char COLOR_HOST[32] = "\033[38;2;153;255;51m";  /* Colores pertenecientes al host */
+char COLOR_PATH[32] = "\033[38;2;153;204;255m"; /* Colores del path */
 
 
-// void color_init(void) {
-//     COLOR_HOST = "\033[38;2;153;255;51m";
-//     COLOR_PATH = "\033[38;2;153;204;255m";
-//     COLOR_TEXT = "\x1b[0m";
-// }
-
-
+/* Funcion que muestra el prompt */
 void show_prompt(void) {
-    char cwd[1024];
-    getcwd(cwd, 1024);
-    char host[1024];
-    gethostname(host, 1024);
-    char user[1024];
-    getlogin_r(user, 1024);
+    char cwd[1024]; /* Creamos un string para el path */
+    getcwd(cwd, 1024);  /* Esta funcion nos devuelve el path y la guarda en el array cwd */
+
+    char host[1024];     /* Creamos un string para el host */
+    gethostname(host, 1024);   /* Esta funcion nos devuelve el nombre del host y 
+                                            lo guarda en el string host */
+
+    char user[1024];    /* Creamos un string para el user */
+    getlogin_r(user, 1024); /* Esta funcion nos devuelve el usuario loggeado y 
+                                            lo guarda en el string user */
 
 
-    printf ("%smybash %s%s@%s:%s %s> %s",COLOR_TEXT ,COLOR_HOST,user, host, COLOR_PATH ,cwd, COLOR_TEXT);
+    printf ("%smybash %s%s@%s:%s %s> %s",COLOR_TEXT ,COLOR_HOST,user, host, COLOR_PATH ,cwd, COLOR_TEXT); /* Printf que se muestra en cada ejecucion de pipe */
     fflush (stdout);
 }
 
-
+/* Funcion para cambiar el color del prompt */
 static void color_change(scommand cmd) {
-    //color 0/1/2/3 (((paletas)))
-    //"\033[38;2;153;204;255m"
-    uint n = scommand_length(cmd);
-    if (n == 2) {
-        scommand_pop_front(cmd);
-        char* palet = scommand_front(cmd);
-        if (strcmp(palet, "0") == 0) {
+    //uso : color 0/1/2/3 (((paletas)))
+    uint n = scommand_length(cmd);  /* Vemos el largo del comando */
+    if (n == 2) {   /* En caso de ser igual a 2 (argumento color + paleta) */
+        scommand_pop_front(cmd);    /* Eliminamos el argumento color */
+        char* palet = scommand_front(cmd);  /* Tomamos la paleta introducida */
+        if (strcmp(palet, "0") == 0) {  /* Si es 0, se usa la paleta por defecto */
 
             strcpy(COLOR_TEXT,"\x1b[0m");
             strcpy(COLOR_HOST,"\033[38;2;153;255;51m");
             strcpy(COLOR_PATH,"\033[38;2;153;204;255m");
         }
-        else if (strcmp(palet, "1") == 0) {
+        else if (strcmp(palet, "1") == 0) { /* Si es 1, se usa la paleta hacker */
             strcpy(COLOR_TEXT,"\033[38;2;00;255;00m");
             strcpy(COLOR_HOST,"\033[38;2;00;255;00m");
             strcpy(COLOR_PATH,"\033[38;2;00;255;00m");
         }
-        else if (strcmp(palet, "2") == 0) {
+        else if (strcmp(palet, "2") == 0) { /* Si es 2, se usa la paleta invierno gris. */
             strcpy(COLOR_TEXT,"\033[38;2;156;186;188m");
             strcpy(COLOR_HOST,"\033[38;2;92;142;148m");
             strcpy(COLOR_PATH,"\033[38;2;220;209;226m");
         }
-        else {
-            printf("Paleta invalida.\n Paletas disponibles del 0 al 2");
+        else {  /* Si el argumento de paleta no es 0,1,2 se da un aviso. */
+            printf("Paleta invalida.\n Paletas disponibles del 0 al 2\n");
         }
 
     }
-    else {
+    else {  /* Si no se da el formato correcto se larga un aviso. */
         printf("Se puede cambiar la paleta de colores de mybash usando color con un número del 0 al 2\nPaletas disponibles: \n0 : defecto\n1 : 'hacker'\n2 : invierno gris \n");
     }
 
@@ -86,9 +83,9 @@ ademas, cd (a secas) te manda a home
     unsigned int n = scommand_length(cmd);
     assert(cmd != NULL);
     if (n > 2) {    //cd algo/algo basura
-        printf("Muchos argumentos\n");
+        printf("Muchos argumentos\n");  /* Aviso de exceso de args */
     }
-    else if (n == 2) { //cd path
+    else if (n == 2) { /* Caso donde querramos saltar a otro directorio en base al que estamos. */
         scommand_pop_front(cmd);
         char* path = scommand_front(cmd);
         int err = syscall(SYS_chdir, path);
@@ -96,7 +93,7 @@ ademas, cd (a secas) te manda a home
             printf("pucha, no se encontró el directorio :( \n");
         }
     }
-    else if (n == 1) { //cd (a secas, te salta a home)
+    else if (n == 1) { /* Caso en donde querramos volver al home */
         int err = syscall(SYS_chdir, "/home");
         if (err != 0) {
             printf("No se como esto dio un error \n");
@@ -106,27 +103,27 @@ ademas, cd (a secas) te manda a home
 
 
 static void run_help(scommand cmd) {
-    printf ("\n");
-    printf ("Mybash :) \n");
-    printf ("\n");
-    printf ("Autores: \nBenjamin Lozano\nFabrizio Longhi\nGaston Bonfils\nFacundo Ayala\n");
-    printf ("\n");
-    printf ("Comandos internos:\n -help: es este mensaje :) \n -exit: sale de la consola (porfavor no lo hagas :c )\n -cd: cambia de directorio, usando path relativo o absoluto (ej: /home/USUARIO/Documentos/)\n -color: cambia la paleta de colores (usar color solo para ver su uso)");
-    printf ("\n");
+    printf ("\nBienvenido a Mybash :)\nHecho por: \n"
+    "Benjamin Lozano\nFabrizio Longhi\nGaston Bonfils\nFacundo Ayala\n"
+    "Comandos internos:\n"
+    " -help: es este mensaje :) \n -exit: sale de la consola (porfavor no lo hagas :c )\n "
+    "-cd: cambia de directorio, usando path relativo o absoluto (ej: /home/USUARIO/Documentos/)\n "
+    "-color: cambia la paleta de colores. Contamos actualmente con 3 paletas.\n"
+    " Por defecto, arg = 0, hacker, arg = 1, invierno gris, arg = 2\n");
 }
 
 static void run_exit(scommand cmd)  {
-    printf ("Chau chau!!! nos vemoooooos!!! c:\n");
-    exit(2);
+    printf ("Chau chau!!! nos vemoooooos!!! c:\n"); /* Despedida */
+    exit(2);    /* Syscall que cierra el bash. */
     //quit= true;
 }
 
 bool builtin_is_internal(scommand cmd) {
     assert(cmd != NULL);
-    bool is_cd = strcmp(scommand_front(cmd),"cd") == 0;
-    bool is_help = strcmp(scommand_front(cmd),"help") == 0;
-    bool is_exit = strcmp(scommand_front(cmd),"exit") == 0;
-    bool is_color = strcmp(scommand_front(cmd),"color") == 0;
+    bool is_cd = strcmp(scommand_front(cmd),"cd") == 0,
+    is_help = strcmp(scommand_front(cmd),"help") == 0,
+    is_exit = strcmp(scommand_front(cmd),"exit") == 0,
+    is_color = strcmp(scommand_front(cmd),"color") == 0;
     return is_cd || is_help || is_exit || is_color;
 }
 
