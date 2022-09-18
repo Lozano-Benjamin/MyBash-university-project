@@ -19,5 +19,8 @@ char * strmerge(char *s1, char *s2);
  *
  */
 char * strmergefree(char *s1, char *s2);
+/*  Concatena las cadenas s1 y s2 usando strmerge
+    pero en este caso la diferencia es que ya libera memoria,
+    es decir que no es necesario usar un free() con cada uso. */
 
 #endif
