@@ -9,53 +9,25 @@
 #include "parsing.h"
 #include "builtin.h"
 
-
-// #define ANSI_COLOR_RESET   "\x1b[0m"
-// #define COLOR_HOST "\033[38;2;153;255;51m"
-// #define COLOR_PATH "\033[38;2;153;204;255m"
-
-
-// static void show_prompt(void) {
-//     char cwd[1024];
-//     getcwd(cwd, 1024);
-//     char host[1024];
-//     gethostname(host, 1024);
-//     char user[1024];
-//     getlogin_r(user, 1024);
-
-//     printf ("mybash" COLOR_HOST " %s@%s:" COLOR_PATH" %s> " ANSI_COLOR_RESET, user, host ,cwd);
-//     fflush (stdout);
-// }
-
-
-
-
 int main(int argc, char *argv[]) {
     pipeline pipe;
     Parser input;
     bool quit = false;
-    //color_init();
-
 
     while (!quit) {
-        input = parser_new(stdin);      //poner esta linea adentro del bucle
-        show_prompt();                  //resuelve el problema de que no pida
-        pipe = parse_pipeline(input);
+        input = parser_new(stdin);   /* El parser toma la entrada por teclado */
+        show_prompt();                      /* Mostramos prompt con ifno */
+        pipe = parse_pipeline(input);   /* Se parsea lo ingresado por teclado */
 
-        /* Hay que salir luego de ejecutar? */
-        quit = parser_at_eof(input);    
+        quit = parser_at_eof(input);    /* Revision si debemos salir */
 
-        // if ((pipe == NULL)) {
-        //     printf("Sintaxis inválida\n");  //este print es para comandos como "ls >"
-        // }
-        
-        if (pipe != NULL) {
-            execute_pipeline(pipe);
-            pipe = pipeline_destroy(pipe);
+        if (pipe != NULL) { /* Si la pipe no se rompe */
+            execute_pipeline(pipe); /* Ejecutamos la pipe */
+            pipe = pipeline_destroy(pipe);  /* Destruimos la pipe ejecutada */
         }
 
     }
-    input = parser_destroy(input); input = NULL;
+    input = parser_destroy(input); input = NULL;    /* Destruimos el parser y setteamos en NULL */
     return EXIT_SUCCESS;
 
 }

@@ -14,25 +14,6 @@
 #include "builtin.h"
 #include "execute.h"
 
-/*
-Lista de tareas a tomar en cuenta:!
-Modificar las redirecciones (in/out, dup2)
-Ejecutar un comando simple (los fork() y execvp())
-Ejecutar pipelines
-Ejecutar en foreground y esas cosas
-
-"La primera tarea del módulo de ejecución es reconocer entre comandos internos y externos, 
-y decidir si invocar a una función interna o a la ejecución de procesos de manera externa.
-"
-
-Arrancar con comandos simples e ir escalando de a poco
-
-
-*/
-
-
-
-
 static char** tomar_args(scommand cmd) {        //funcion propia para tomar los argumentos de un comando
     assert(cmd != NULL);    
 
@@ -48,36 +29,34 @@ static char** tomar_args(scommand cmd) {        //funcion propia para tomar los 
     return argv; //el array argv quedaria por ejemplo ["ls", "-l", NULL]
 }
 
-
-
 static int change_in(scommand cmd) {
     assert(cmd != NULL);
-    char* in = scommand_get_redir_in(cmd);
-    if(in != NULL){
-        int file = open(in, O_RDONLY, S_IRUSR);
-        if (file < 0){
+    char* in = scommand_get_redir_in(cmd);  /* Obtenemos el archivo input */
+    if(in != NULL){ /* En caso de que el campo de input no sea NULL */
+        int file = open(in, O_RDONLY, S_IRUSR); /* Abrimos el input con los permisos de solo lectura */
+        if (file < 0){     /* En caso de no encontrar el archivo */
             printf("pucha, no se encontró el archivo de input :c \n");
-            exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE); /* Terminamos el proceso con una falla */
         }
-        int res = dup2(file, STDIN_FILENO);
-        if(res < 0){
+        int res = dup2(file, 0); /* Duplicamos los filedescriptors */
+        if(res < 0){    /* En caso de error */
             printf("Error redir\n");
-            exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE); /* Terminamos el proceso con una falla */
         }
-        int fd_close = close(file);
+        int fd_close = close(file); /* Cerramos el archivo */
         if (fd_close <0){               // si el cierre da error (no deberia)
             printf ("Error close\n");
         }
     }
-    return(EXIT_SUCCESS);
+    return(EXIT_SUCCESS);   
 }
 
 static void change_out(scommand cmd) {
     assert (cmd !=NULL);
 
-    char * out_r = scommand_get_redir_out(cmd);
+    char * out_r = scommand_get_redir_out(cmd); /* Obtenemos el output */
 
-    if (out_r != NULL){
+    if (out_r != NULL){ /* En caso de que el puntero a output exista */
         int fd_out = open (out_r, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR); //crea como lectura y escritura, le da permiso al usuario
 
         if (fd_out < 0){                //si fd da error
@@ -106,11 +85,11 @@ static void exec_single(scommand cmd) {
         change_out(cmd);
     }
 
-    char** argv = tomar_args(cmd);
+    char** argv = tomar_args(cmd);  /* Tomamos los argumentos del scommand y los metemos en un arreglo */
     int errorcito = execvp(argv[0], argv); //argv[0] carga el nombre del comando (ls por ejemplo) y argv todos los argumentos (incluye ls al inicio y NULL al final)
-    if (errorcito < 0) {
+    if (errorcito < 0) {    /* En caso de que falle el execvp */
         printf("pucha, no se encontró el comando :(\n");
-        exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE); /* Cerramos el proceso con un status de falla */
     }
                 
 }  
@@ -122,29 +101,21 @@ static void single_command_execution(scommand cmd) {
         builtin_run(cmd);
     }
 
-    else if (!scommand_is_empty(cmd)) {
+    else if (!scommand_is_empty(cmd)) { /* Si el comando no esta vacio */
         pid_t pid = fork();
-        if (pid < 0) {
+        if (pid < 0) {  /* Caso de error en fork */
             printf("Error del fork en single_command_execution \n");
         }
         else if (pid == 0) {    //forkeo
             exec_single(cmd);
-        }
-        else {
-            //printf("soy el papi \n");
-        }                        
+        }                     
     }                           
 }                        
 
-    
-
-
-
 static void multiple_command_execution(pipeline apipe) {
     /*este multiple solo puede ejecutar hasta dos comandos
-    * sea eso un comando del estilo 
-    * ls -l | wc 
-    */
+     sea eso un comando del estilo 
+     ls -l | wc */
 
     scommand fst_command = pipeline_front(apipe);  //guardo el primer comando
     assert(fst_command != NULL);
@@ -152,24 +123,25 @@ static void multiple_command_execution(pipeline apipe) {
     scommand snd_command = pipeline_front(apipe);   //guardo el segundo comando
     assert(snd_command != NULL);
 
-
     /*
-    * Coreccion del execute
-    * La idea es un fork por comando
-    * suerte porfa
+    Coreccion del execute
+    La idea es un fork por comando
+    suerte porfa
     */
 
-   int p[2];
-   int err_pipe = pipe(p);
-   if (err_pipe < 0) {printf("error al pipear");}
+   int p[2];    /* Creamos un buffer */
+   int err_pipe = pipe(p);  /* creamos la pipe con el buffer p */
+   if (err_pipe < 0) {
+    printf("error al pipear"); /* Caso de error */
+    }  
 
-   pid_t pid = fork();
-   if (pid < 0) {
-        printf("error del tenedor \n");
+   pid_t pid = fork();  
+   if (pid < 0) {   /* Error de fork */
+        printf("error del fork \n");
    }
-   else if (pid == 0) {
-        int err_dup = dup2(p[1],1);
-        if (err_dup < 0) {
+   else if (pid == 0) { /* Caso hijo */
+        int err_dup = dup2(p[1],1); /* Duplica el file descriptor */
+        if (err_dup < 0) {  /* Caso de error  */
             printf("error en el dup2 \n");
             exit(EXIT_FAILURE);
         }
@@ -182,9 +154,9 @@ static void multiple_command_execution(pipeline apipe) {
         }
    }
 
-   pid_t pid2 = fork();
+   pid_t pid2 = fork(); 
    if (pid2 < 0) {
-        printf("Error con el tenedor \n");
+        printf("Error con el fork \n");
    }
    else if (pid2 == 0) {
         int err_dup = dup2(p[0],0);
