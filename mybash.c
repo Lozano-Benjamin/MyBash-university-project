@@ -10,27 +10,31 @@
 #include "builtin.h"
 
 
-#define ANSI_COLOR_RESET   "\x1b[0m"
-#define COLOR_HOST "\033[38;2;153;255;51m"
-#define COLOR_PATH "\033[38;2;153;204;255m"
+// #define ANSI_COLOR_RESET   "\x1b[0m"
+// #define COLOR_HOST "\033[38;2;153;255;51m"
+// #define COLOR_PATH "\033[38;2;153;204;255m"
 
 
-static void show_prompt(void) {
-    char cwd[1024];
-    getcwd(cwd, 1024);
-    char host[1024];
-    gethostname(host, 1024);
-    char user[1024];
-    getlogin_r(user, 1024);
+// static void show_prompt(void) {
+//     char cwd[1024];
+//     getcwd(cwd, 1024);
+//     char host[1024];
+//     gethostname(host, 1024);
+//     char user[1024];
+//     getlogin_r(user, 1024);
 
-    printf ("mybash" COLOR_HOST " %s@%s:" COLOR_PATH" %s> " ANSI_COLOR_RESET, user, host ,cwd);
-    fflush (stdout);
-}
+//     printf ("mybash" COLOR_HOST " %s@%s:" COLOR_PATH" %s> " ANSI_COLOR_RESET, user, host ,cwd);
+//     fflush (stdout);
+// }
+
+
+
 
 int main(int argc, char *argv[]) {
     pipeline pipe;
     Parser input;
     bool quit = false;
+    //color_init();
 
 
     while (!quit) {

@@ -7,6 +7,12 @@
 
 //bool quit;
 
+void show_prompt(void);
+
+//void color_init(void);
+
+//void color_change(scommand cmd);
+
 bool builtin_is_internal(scommand cmd);
 /*
  * Indica si el comando alojado en `cmd` es un comando interno
