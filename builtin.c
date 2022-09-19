@@ -123,8 +123,7 @@ static void run_help(scommand cmd) {
 
 static void run_exit(scommand cmd)  {
     printf ("Chau chau!!! nos vemoooooos!!! c:\n"); /* Despedida */
-    exit(2);    /* Syscall que cierra el bash. */
-    //quit= true;
+    quit= true;
 }
 
 bool builtin_is_internal(scommand cmd) {

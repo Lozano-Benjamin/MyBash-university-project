@@ -30,26 +30,6 @@
  * agrega dos accesores/modificadores para redirección de entrada y salida.
  */
 
-/*
-struct args{
-       arg *char;
-      next *args;
-}
-struct lista_de_scommand{
-    command *char
-    argum *args;
-}
-
-struct scommand {
-    comando *lista_de_scommand
-    out *char;
-    in *char;
-};
-
-[lista ['el comando', 'arg1', ..., 'argn'], out, in]
-
-
-*/
 
 typedef struct scommand_s * scommand;
 
@@ -142,6 +122,10 @@ char * scommand_get_redir_out(const scommand self);
  * Requires: self!=NULL
  */
 
+char* scommand_head_and_pop(scommand self);
+
+
+
 char * scommand_to_string(const scommand self);
 /* Preety printer para hacer debugging/logging.
  * Genera una representación del comando simple en un string (aka "serializar")
@@ -210,6 +194,9 @@ void pipeline_pop_front(pipeline self);
  *      Destruye el comando extraido.
  * Requires: self!=NULL && !pipeline_is_empty(self)
  */
+
+
+scommand pipeline_head_and_pop(pipeline self);
 
 void pipeline_set_wait(pipeline self, const bool w);
 /*

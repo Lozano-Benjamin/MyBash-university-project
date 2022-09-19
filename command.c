@@ -1,5 +1,6 @@
 #include <endian.h>
 #include <stdio.h>
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -69,17 +70,28 @@ void scommand_push_back(scommand self, char * argument){
 
 
 /* Version rota del Pop NO ELIMINAR hasta poder arreglar los problemas que nos trae. */
-// void scommand_pop_front(scommand self){
-//     assert(self != NULL && !scommand_is_empty(self));
-//     char *front = g_slist_nth_data(self->comm_args, 0);
-//     free(front);
-//     self->comm_args = g_slist_delete_link(self->comm_args, self->comm_args);
-// }
-
-
-void scommand_pop_front(scommand self){    
+void scommand_pop_front(scommand self){
     assert(self != NULL && !scommand_is_empty(self));
-    self -> comm_args = g_slist_remove(self->comm_args,g_slist_nth_data(self->comm_args, 0)); /* Elimina el elemento de la GSList en indice 0 */
+    GSList *head = self -> comm_args;
+    self -> comm_args = g_slist_remove_link(self -> comm_args, head);
+
+    free(head -> data);
+    head -> data = NULL;
+    
+    g_slist_free_1(head);
+}
+
+
+
+char* scommand_head_and_pop(scommand self){
+    assert(self != NULL && !scommand_is_empty(self));
+
+    char* res = g_slist_nth_data(self -> comm_args,0);
+
+    self -> comm_args = g_slist_remove(self->comm_args, res);
+
+    assert(res != NULL);
+    return res;
 }
 
 
@@ -174,19 +186,14 @@ pipeline pipeline_new(void){ //Benja
     return result;
 }
 
-
-
-pipeline pipeline_destroy(pipeline self){  //Benja
+pipeline pipeline_destroy(pipeline self){
     assert(self != NULL);
-    while (!pipeline_is_empty(self)){
-        scommand aux= pipeline_front(self); /* Agarramos el scommand ubicado al frente */
-        pipeline_pop_front(self);           /* Liberamos el primer elemento */
-        aux=scommand_destroy (aux);     /* Destruimos el scommand que agarramos primero. */
+    while(self->command_list != NULL){
+        pipeline_pop_front(self);
     }
-    free(self); /* Liberamos el puntero a self */
-    self=NULL;  /* Setteamos en NULL */
-    assert(self == NULL);
-    return self;
+    free(self);
+    self = NULL;
+    return (self);
 }
 
 /* Modificadores */
@@ -198,18 +205,31 @@ void pipeline_push_back(pipeline self, scommand sc){
 }
 
 /* Esto esta aun en arreglos, revisar. */
-// void pipeline_pop_front(pipeline self){
-//     assert(self != NULL && !pipeline_is_empty(self));
-//     scommand_destroy(pipeline_front(self));
-//     self->command_list = g_slist_delete_link(self->command_list, self->command_list);
-// }
 
-void pipeline_pop_front(pipeline self){ 
+scommand pipeline_head_and_pop(pipeline self){
     assert(self != NULL && !pipeline_is_empty(self));
-    self -> command_list = g_slist_remove(self->command_list, g_slist_nth_data(self->command_list, 0));
+
+    scommand res = g_slist_nth_data(self -> command_list,0);
+
+    self -> command_list= g_slist_remove(self->command_list, res);
+
+    assert(res != NULL);
+    return res;
 }
 
 
+void pipeline_pop_front(pipeline self){
+    assert(self != NULL && !pipeline_is_empty(self));
+
+    GSList *head = self -> command_list;
+
+    self -> command_list = g_slist_remove_link(self->command_list, head);
+
+    head -> data = scommand_destroy(head -> data);
+
+    g_slist_free_1(head);
+    
+}
 
 void pipeline_set_wait(pipeline self, const bool w) {
     assert(self != NULL);
@@ -244,29 +264,27 @@ bool pipeline_get_wait(const pipeline self){
     return self->wait;  /* Devolvemos el valor de el campo wait */
 }
 
-char * pipeline_to_string(const pipeline self){ //Benja.
+
+char * pipeline_to_string(const pipeline self){
     assert(self != NULL);
-    GSList* command_list = self->command_list ;
-    char *result = strdup(""); //Inicializamos res como "", ya hace la reserva de memoria.
 
-    if (command_list != NULL) {
+    // Inicializamos un string con memoria:
+    char *res_pipeline = strdup("");
 
-        char *aux = scommand_to_string(g_slist_nth_data(command_list,0u));  /* agarramos el primer command y lo metemos en aux */
-        result = strmergefree(result, aux);                                /* concatenamos con "" */
-
-        for (unsigned int i = 1u; i < pipeline_length(self); ++i) {
-            result = strmergefree(result, " | ");   /* En cada iteracion concatenamos una pipe */
-            aux = scommand_to_string(g_slist_nth_data(command_list,i)); /* agarro el i-esimo arg */
-            result = strmergefree(result, aux); /* concateno el i-esimo arg */
+    // Concatenamos los scommands con "| " ó "&" (según corresponda):
+    for (unsigned int i = 0u; i < g_slist_length(self->command_list); ++i){
+        scommand current_scommand = g_slist_nth_data(self->command_list, i);
+        char *simple_command = scommand_to_string(current_scommand);
+        res_pipeline = strmergefree(res_pipeline, simple_command);
+        if(i != g_slist_length(self->command_list) - 1u){
+            res_pipeline = strmergefree(res_pipeline, "| ");
         }
-
-        if (!pipeline_get_wait(self)){
-            result = strmergefree(result, "&"); /* En caso de que querramos ejecutar el background
-                                                            concatenamos & al final. */
-        }
+        free(simple_command);
+    }
+    // Concatenamos "&" si corresponde:
+    if(!self->wait){
+        res_pipeline = strmergefree(res_pipeline, "&");
     }
     
-    assert(pipeline_is_empty(self) || pipeline_get_wait(self) || strlen(result) > 0);
-
-    return result;
-} 
+    return (res_pipeline);
+}

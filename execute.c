@@ -14,19 +14,22 @@
 #include "builtin.h"
 #include "execute.h"
 
-static char** tomar_args(scommand cmd) {        //funcion propia para tomar los argumentos de un comando
-    assert(cmd != NULL);    
 
-    unsigned int n = scommand_length(cmd);
-    char ** argv = calloc(sizeof(char*), n+1);  //hago un array argv de strings (todo dinamico asi lo puedo retornar)
-    for (unsigned int i = 0; i < n; i++) {      
-        char* arg = scommand_front(cmd);
-        argv[i] = arg;
-        scommand_pop_front(cmd);                //voy poniendo los argumentos en el array 
+static char** tomar_args(scommand self){
+    assert(!scommand_is_empty(self));
+    unsigned int n = scommand_length(self);
+    char** vec = calloc(sizeof(char*), n + 1u);
+    if(vec == NULL){
+        fprintf(stderr,"INVALID ALLOCATED MEMORY");
+        exit(EXIT_FAILURE);
     }
-    argv[n] = NULL;             //ultimo elemento NULL, esto por como funciona el execvp
-
-    return argv; //el array argv quedaria por ejemplo ["ls", "-l", NULL]
+    for(unsigned int i = 0; i < n; i++){
+        char* elem = scommand_head_and_pop(self);
+        vec[i] = elem;
+        assert(vec[i] != NULL);
+    }
+    vec[n] = NULL;
+    return vec;
 }
 
 static int change_in(scommand cmd) {
@@ -97,7 +100,7 @@ static void exec_single(scommand cmd) {
 static void single_command_execution(scommand cmd) {
     assert(cmd != NULL);
 
-    if (builtin_is_internal(cmd)) {     //distinccion de casos de si es interno el comando o no
+    if (builtin_is_internal(cmd)) {     //distincion de casos de si es interno el comando o no
         builtin_run(cmd);
     }
 
@@ -117,9 +120,9 @@ static void multiple_command_execution(pipeline apipe) {
      sea eso un comando del estilo 
      ls -l | wc */
 
-    scommand fst_command = pipeline_front(apipe);  //guardo el primer comando
+    scommand fst_command = pipeline_head_and_pop(apipe);  //guardo el primer comando
     assert(fst_command != NULL);
-    pipeline_pop_front(apipe);
+    // pipeline_pop_front(apipe);
     scommand snd_command = pipeline_front(apipe);   //guardo el segundo comando
     assert(snd_command != NULL);
 
@@ -149,7 +152,6 @@ static void multiple_command_execution(pipeline apipe) {
             close(p[0]);
             close(p[1]);
             exec_single(fst_command); //el hijo se muere en el execvp
-            //exit(EXIT_SUCCESS);
             printf("no se deberia llegar a este print \n");
         }
    }
@@ -173,10 +175,8 @@ static void multiple_command_execution(pipeline apipe) {
    }
 
    else /*(pid2 > 0)*/ {
-        //el padre ni idea
         close(p[0]);
         close(p[1]);
-        // wait(NULL); //este wait no tiene sentido pues no espera a nadie
    }
 }
 
@@ -188,7 +188,6 @@ static void execute_foreground(pipeline apipe) {
     }
     else if (pipeline_length(apipe) == 2){
         multiple_command_execution(apipe);              //ejecuto el comando multiple
-        //wait(NULL); //este wait hace que se muestre bien el prompt pero hace que ande mal la otra cosa
     }
     else {
         printf("Lo sentimos, solo hasta dos comandos pipeados )): (ejemplo: ls -l | wc) \n");
@@ -226,7 +225,6 @@ static void execute_background(pipeline apipe){
         /*Proceso padre, va a esperar a que se termine el fork de su hijo,
           entonces solo necesitamos hacer un Wait al primero porque internamente los
           demas procesos padre esperaran a sus hijos. */
-        //wait(NULL); //este wait hace que el prompt se muestre bien pero HACE QUE NO ANDE EL BACKGROUND LOL XD
     }
 }
 
@@ -250,7 +248,6 @@ void execute_pipeline(pipeline apipe) {
         
         wait(NULL); //ESTE WAIT CORRIGÉ EL ERROR DEL WAIT DE LA LINEA 303 //reubicar este wait, saca un test
     }
-    //wait(NULL); //reemplaza a los que estan en los ifs, de todas formas tira un error el test ????
     if (n == 2) {
         wait(NULL); //este hace que no se bugee el prompt en pipes , espero que no genere bugs
     } //es una solucion medio ad hoc, no lo voy a negar, pero soluciona un test relacionado a la cantidad de waits

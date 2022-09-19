@@ -12,7 +12,7 @@
 int main(int argc, char *argv[]) {
     pipeline pipe;
     Parser input;
-    bool quit = false;
+    quit = false;
 
     while (!quit) {
         input = parser_new(stdin);   /* El parser toma la entrada por teclado */
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
         }
 
     }
-    input = parser_destroy(input); input = NULL;    /* Destruimos el parser y setteamos en NULL */
+    input = parser_destroy(input); input = NULL;    /* Destruimos el parser y seteamos en NULL */
     return EXIT_SUCCESS;
 
 }

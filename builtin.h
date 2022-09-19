@@ -5,7 +5,7 @@
 
 #include "command.h"
 
-//bool quit;
+bool quit;
 
 void show_prompt(void);
 
