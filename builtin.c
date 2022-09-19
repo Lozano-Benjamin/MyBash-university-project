@@ -74,12 +74,15 @@ static void color_change(scommand cmd) {
 
     }
     else {  /* Si no se da el formato correcto se larga un aviso. */
-        printf("Se puede cambiar la paleta de colores de mybash usando color con un número del 0 al 3\n"
+        printf("Se puede cambiar la paleta de colores de mybash usando color con un número del 0 al 6\n"
         "Paletas disponibles: \n"
         "0 : defecto\n"
         "1 : 'hacker'\n"
         "2 : invierno gris\n"
-        "3 : rosita?\n");
+        "3 : naranjita\n"
+        "4 : berenjena\n"
+        "5 : facu facu\n"
+        "6 : bocaaaaaaa\n");
     }
 
 }
