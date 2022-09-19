@@ -108,7 +108,8 @@ ademas, cd (a secas) te manda a home
         }
     }
     else if (n == 1) { /* Caso en donde querramos volver al home */
-        int err = syscall(SYS_chdir, "/home");
+        char* home_path = getenv("HOME"); //escriben en home_path "home/usuario"
+        int err = syscall(SYS_chdir, home_path);
         if (err != 0) {
             printf("No se como esto dio un error \n");
         }
