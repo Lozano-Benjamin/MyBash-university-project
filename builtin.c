@@ -78,8 +78,8 @@ static void color_change(scommand cmd) {
             strcpy(COLOR_HOST,"\033[38;2;224;122;95m"); 
             strcpy(COLOR_PATH,"\033[38;2;129;178;154m");           
         }
-        else {  /* Si el argumento de paleta no es 0,1,2 se da un aviso. */
-            printf("Paleta invalida.\n Paletas disponibles del 0 al 5\n");
+        else {  /* Si el argumento de paleta no es 0,1,2,3,4,5,6 se da un aviso. */
+            printf("Paleta invalida.\n Paletas disponibles del 0 al 6\n");
         }
 
     }
