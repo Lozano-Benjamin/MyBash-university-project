@@ -4,35 +4,42 @@
 - Longhi Heredia Fabrizio Mateo (fabrizio.longhi@mi.unc.ecu.ar)
 - Lozano Benjamín (benjamin.lozano@mi.unc.edu.ar)
 
-# Introduccion
-Se nos asigno la tarea de codificar una shell al estilo de bash (*Born Again Shell*) a la que denominamos *mybash*, utilizando el lenguaje C, a realizar en un periodo de aproximadamente 4 semanas, las cuales nos dedicamos a distribuirnos tareas e investigar acerca del funcionamiento del bash de linux para replicar su comportamiento. Tambien nos dedicamos a aprender a trabajar en equipo con git (algunos no habian usado nunca git), coordinarnos y convivir con diferentes formas de programar. Fue nuestro primer proyecto en equipo. Logramos realizar una shell funcional con un prompt mejorado esteticamente. Aunque es una version muy basica, esperemos les guste y sea útil. 
-
-
-# Metodologia de trabajo
-Para la realizacion del trabajo tomamos de base la metodologia de cascada (*waterfall methodology*) ya que consideramos, a diferencia de las metodologias agiles, que se adaptaba mejor a nuestras necesidades ya que esta metodologia sigue una estructura lineal acorde a lo que se nos aconsejo que sigamos. Esto es, principalmente a que no avanzabamos a otro modulo del proyecto hasta haber finalizado el anterior, tomando como guia la realizacion de los modulos mas simples a los mas complejos. 
-
-Con respecto a la division de tareas y a la organizacion realizamos encuentros virtuales diarios, usando la plataforma *discord* en donde cada integrante comentaba en que pudo avanzar y si se encontraba con alguna dificultad.
-
-Al momento de completar el primer modulo lo hicimos dividiendo las funciones a completar, para que luego otro integrante se encargue de verificar lo realizado por su compañero con fin de eliminar posibles errores. Con respecto al segundo y tercer modulo lo realizamos dividiendonos en equipos de a dos para minimizar el tiempo ya que se trataban de modulos simples y cortos. Por ultimo, para realizar el modulo `execute` repetimos el metodo usado para el primer modulo dividiendo las funciones entre los integrantes.
-
-Asimismo para el control de versionado utilizamos la plataforma *bitbucket*
-
-
-
-
 # Contenido
 
-* [Modulos e implemetaciones](#Módulos-e-implementaciones)
+* [Introducción](#Introducción)
+* [Guía de uso](#Guía-de-uso)
+* [Metodología de trabajo](#Metodología-de-trabajo)
+* [Módulos, implementaciones y técnicas](#Módulos-implementaciones-y-técnicas)
     * [Command](#Command)
     * [Parser y parsing](#Parser-y-Parsing)
     * [Builtin](#Builtin)
     * [Execute](#Execute)
+    * [Strextra](#Strextra)
     * [myBash](#myBash)
-* [Solución de error de compatibilidad](#Solución-de-error-de-compatibilidad)
-    * [Versión que no compila bien](#Versión-que-no-compila-bien)
-    * [Versión que anda a todos pero con un test fallido](#Versión-que-anda-a-todos-pero-con-un-test-fallido)
+* [Herramientas de programación](#Herramientas-de-programación)
+* [Desarrollo](#Desarrollo)
+    * [Solución de error de compatibilidad](#Solución-de-error-de-compatibilidad)
 
-# Módulos, implementaciones y tecnicas.
+
+# Introducción
+El laboratorio consistió en codificar una shell al estilo de bash (*Born Again Shell*) a la que denominamos *mybash*, utilizando el lenguaje C, a realizar en un periodo de aproximadamente 4 semanas.
+ 
+# Guía de uso
+Dirijase hacia el directorio donde tenga almacenado el proyecto. Luego desde la terminal ejecute el comando `make`. De esta manera  se compilara el proyecto. Se crearan archivos compilados y un ejecutable con el nombre `mybash`. Desde la terminal ejecute `./mybash` y podra hacer uso de nuestra bash. Para salir del programa use el comando `exit`.
+
+# Metodología de trabajo
+Para la realizacion del trabajo tomamos de base la metodología de cascada (*waterfall methodology*) ya que consideramos, a diferencia de las metodologias ágiles, que se adaptaba mejor a nuestras necesidades ya que esta metodologia sigue una estructura lineal acorde a lo que se nos aconsejo que sigamos. Esto es, principalmente a que no avanzabamos a otro modulo del proyecto hasta haber finalizado el anterior, tomando como guia la realizacion de los modulos más simples a los más complejos. 
+
+Con respecto a la division de tareas y a la organizacion realizamos encuentros virtuales diarios, usando la plataforma *discord* en donde cada integrante comentaba en que pudo avanzar y si se encontraba con alguna dificultad. Por otro lado, para consultas mas casuales utilizamos la plataforma de mensajeria *telegram*
+
+A la hora de realizar el primer módulo nos dividimos las funciones a completar ya que se trataban de implentaciones sencillas pero numerosas, lo hicimos así con el fin de que al momento de finalizar un compañero verifique lo realizado por el otro para así minimizar la cantidad de errores. 
+Con respecto al segundo y tercer modulo lo realizamos dividiendonos en equipos de a dos para minimizar el tiempo ya que se trataban de modulos simples y cortos. Por último, para realizar el módulo `execute` repetimos el método usado para el primer módulo dividiendonos las funciones entre los integrantes.
+
+Asímismo para el control de versionado utilizamos la plataforma *bitbucket*
+
+
+
+# Módulos, implementaciones y técnicas
 
 ## Command
 El módulo command se encarga de implementar el TAD del `scommand` y del `pipeline`. Este módulo no fue complicado de hacer pues usamos las listas de la librería de `GLib` los cuales agilizaron la mayoría de funciones.
@@ -57,20 +64,19 @@ struct pipeline_s {
 ```
 
 ## Parser y Parsing
-La tarea de estos modulos, como sus nombres lo indican, es la de recorrer el `stdin ` de manera lineal e ir tomando los comandos, argumentos, redirectores, pipes y operador de segundo plano para luego armar una instacia del tipo `pipeline` con la interpretacion de los datos de entrada. Cabe destacar que estos modulos no se encargan de verificar si los comandos simples o multiples son validos (dicha tarea esta asignada al modulo execute mediante las system calls) sino mas bien de que los comandos, argumentos, redirectores, pipes y operador de segundo plano respeten su estructura sintactica.\
+La tarea de estos modulos, como sus nombres lo indican, es la de recorrer el `stdin ` de manera lineal e ir tomando los comandos, argumentos, redirectores, pipes y operador de segundo plano para luego armar una instacia del tipo `pipeline` con la interpretacion de los datos de entrada. Cabe destacar que estos modulos no se encargan de verificar si los comandos simples o multiples son validos (dicha tarea esta asignada al modulo execute mediante las system calls) sino mas bien de que los comandos, argumentos, redirectores, pipes y operador de segundo plano respeten su estructura sintactica.
 
-> [name=fernuco] Insertar ejemplo de comando valido para parsear y un comando invalido.
 
-Estos modulos estan compuestos por 3 encabezados.
+Estos modulos estan compuestos por 3 encabezados:
 * `parser.h`
 * `parsing.h`
 * `parsing.c`
 
 ### `Parser.h`
-En este encabezado se encuentra la interfaz del modulo `parser` la cual ya se encuentra implementada por la catedra y cuya implementacion se encuentra en los binarios `parser.o` y `lexer.o`
+En este encabezado se encuentra la interfaz del modulo `parser` la cual ya se encuentra implementada por la catedra y cuya implementacion se encuentra en los binarios `parser.o` y `lexer.o`.
 
 ### `Parsing.h`
-En este encabezado se encuentra la interfaz del modulo `parsing` cuya implementacion se encuentra en el encabezado `parsing.c`
+En este encabezado se encuentra la interfaz del modulo `parsing` cuya implementacion se encuentra en el encabezado `parsing.c`.
 
 ### `Parsing.c`
 En este encabezado se encuentran implementadas las funciones `parse_pipeline` y `scommand parse_scommand`.
@@ -103,7 +109,7 @@ Al principio no entendiamos la manera de implementar `run_exit` pero luego traba
 
 ### `color`
 Para poder cambiar el color del prompt primero cambiamos de lugar la función `show_prompt` del módulo [mybash](#myBash) trayendola al `builtin.c` de manera que se nos haga mas fácil trabajar.   
-Para usar está función hay que llamarla como `color` seguida de un número del 0 al 3 el cual va a referenciar la paleta de colores que se usa. Para ver las posibles opciones de paletas de colores con llamar `color` sin ningún parámetro se muestra la lista. 
+Para usar está función hay que llamarla como `color` seguida de un número del 0 al 5 el cual va a referenciar la paleta de colores que se usa. Para ver las posibles opciones de paletas con llamar `color` sin ningún parámetro se muestra la lista.
 
 ### `builtin_is_internal` y `builtin_alone`
 El trabajo de estas dos funciones es verificar si el comando pasado es interno o no. Para implementar `bultin_is_internal` simplemente comparamos el primer elemento del `scommand` que se les pasa y veíamos si era igual cualquier comando interno. Para `bultin_alone` se usa la función anterior y además se chequea si el largo del `pipeline` es 1. 
@@ -119,6 +125,15 @@ Modularizamos el `execute` de esta manera para permitirnos poder trabajar sobre 
 
 Lamentablemente, solo pudimos implementar hasta un pipeline de dos comandos, como por ejemplo `ls -l | wc`  
 
+
+
+## Strextra
+En el módulo `strextra` se encuentran  dos funciones auxiliares. 
+
+La primera de ellas es `strmerge` que ya viene implementada por la cátedra la cuál nos permite concatenar dos strings y nos devuelve el resultado en un string nuevo. 
+
+La segunda de ellas es `strmergefree` la cuál implementamos nosotros. Ésta función hace un llamado a `strmerge` y libera la posición de memoria en dónde se encontraba el string original al que le concatenamos el segundo.
+
 ## myBash
 Por último, el módulo `mybash.c` se encarga de ir parseando y ejecutando los pipilines mientras el usuario los va tipeando. Esta funcionalidad se encuentra en un bucle en donde sucede lo siguiente:  
 * Se crea un nuevo `parser` donde se registra el input del usuario
@@ -128,59 +143,15 @@ Por último, el módulo `mybash.c` se encarga de ir parseando y ejecutando los p
     * Si no es nulo, se ejecuta y pipe se destruye instantaneamente
 * Si en algún momento se ejecuta el comando `"exit"` cambiara la variable que mantiene el loop de parseo activo y se destruira el parser que registra los comandos para luego cerrar el programa
   
-# HERRAMIENTAS DE PROGRAMACION
+# Herramientas de programación
 Utilizamos como editor de codigo a `Visual Estudio Code`, para el versionado de codigo utilizamos a `Git`, tambien para facilitar algunas veces utilizabamos el `source control` incluido en el editor previamente mencionado. Para compilar utilizabamos un archivo `makefile` incluido en el `kickstarter`. Para debuggear creamos archivos auxiliares que utilizaban todos las funciones del modulo a testear, compilabamos con el comando `gcc -Wall -Werror -Wextra -pedantic -std=gnu11 -c command.c $(pkg-config --cflags --libs glib-2.0) -lglib-2.0 && gcc -Wall -Werror -Wextra -pedantic -std=gnu11 -o self_command *.o main.c -lglib-2.0` donde el primer compilado es para las dependencias y el segundo para el archivo de test. Luego corriamos `gdb` para revisar los bugs. Luego otro tipo de analisis de errores se basaba en debuggear las funciones hasta que que pasen los test existentes en el archivo `makefile`.
 
-# DESARROLLO
-# Lista de problemas y tests fallidos
-## Bugs notables
-* Se puede solucionar el error de la sintaxis inválida pero nuestro método hace que el enter solo (comando vacio) también salte en ese error (priorizamos estética en este caso)
+# Desarrollo
+En un principio había un problema de compilado (relacionado a la definición global de una variable) para algunos miembros del grupo. Este error es debido a una diferencia en la versión del compilador de los integrantes del grupo. Sin embargo, logramos solucionar este problema agregando la flag `-fcommon` al comando de compilado en el Makefile. En caso de que el error persista consultar la [solución](#Solución-de-error-de-compatibilidad).
 
 
-## Tests
-* [Exit normal no compila en ciertas maquinas pero exit corregido compila pero agrega un fallo de test](#Solución-de-error-de-compatibilidad)
-* Hay un error de test relacionado al background y los hijos. Con cambiar un wait se soluciona, pero ese wait si se saca se bugea el prompt por el resto de la ejecución.
-* Un test fallido del chdir que creemos que se maneja por la libreria que usamos para el chdir.
-
-
-
-# Solución de error de compatibilidad
-En nuestro grupo, la mitad de los integrantes tuvo problemas de compilación por el declarado de `quit` como una variable global. El error es del estilo `multiple definition of variable`.
-
-Este problema tiene una solución, pero agrega un test fallido. 
-
-## Versión que no compila bien
-Esta es la versión que trae problemas de compilado a la mitad del grupo pero no agrega errores de tests ni de memory leaks
-
-En `bultin.h` hay que definir la variable global `quit` de la siguiente manera
-```c
-8 | bool quit;
-```
-
-
-Luego en `builtin.c` hay que definir `run_exit` como
-```c
-58 | static void run_exit(scommand cmd)  {
-59 |     printf ("Chau chau!!! nos vemoooooos!!! c:\n");
-60 |     //exit(2)
-61 |     quit= true;
-62 | }
-```
-
-Por último en `mybash.c` hay que definir `quit = false` dentro del main
-
-```c 
-30 | int main(int argc, char *argv[]) {
-31 |    pipeline pipe;
-32 |    Parser input; 
-33 |    quit = false;    //solo cambiar esta linea
-```
-
-De esta manera el programa debería compilar en ciertas maquinas y no tendrá errores de test o memory leaks.
-
-
-## Versión que anda a todos pero con un test fallido
-Esta versión compila a todos pero agrega un test fallido y memory leaks.
+## Solución de error de compatibilidad
+Primero que todo verificar que se agregó la flag `-fcommon` de compilacion en el archivo *Makefile*. Si el error persiste entonces recurrir a lo siguiente:
 
 En `builtin.c` se debe definir `run_exit` como
 ```c
@@ -205,5 +176,5 @@ Por último en `mybash.c` hay que cambiar `quit = false` por `bool quit = false`
 32 |    Parser input; 
 33 |    bool quit = false;    //solo cambiar esta linea
 ```
-Ahora debería compilar en todas las maquinas pero agrega un test fallido relacionado  a un `early exit`, además genera memory leaks pues no se llegan a destruir ciertos objetos como el pipe o el parser. 
+Ahora debería compilar bien pero agrega un test fallido relacionado  a un `early exit`, además genera memory leaks pues no se llegan a destruir ciertos objetos como el pipe o el parser. 
 

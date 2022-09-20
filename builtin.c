@@ -74,20 +74,19 @@ static void color_change(scommand cmd) {
             strcpy(COLOR_PATH,"\033[38;2;000;000;111m");
         }
         else {  /* Si el argumento de paleta no es 0,1,2 se da un aviso. */
-            printf("Paleta invalida.\n Paletas disponibles del 0 al 6\n");
+            printf("Paleta invalida.\n Paletas disponibles del 0 al 5\n");
         }
 
     }
     else {  /* Si no se da el formato correcto se larga un aviso. */
-        printf("Se puede cambiar la paleta de colores de mybash usando color con un número del 0 al 6\n"
+        printf("Se puede cambiar la paleta de colores de mybash usando color con un número del 0 al 5\n"
         "Paletas disponibles: \n"
         "0 : defecto\n"
         "1 : 'hacker'\n"
         "2 : invierno gris\n"
         "3 : naranjita\n"
         "4 : berenjena\n"
-        "5 : facu facu\n"
-        "6 : bocaaaaaaa\n");
+        "5 : bocaaaaaaa\n");
     }
 
 }
@@ -131,7 +130,7 @@ static void run_help(scommand cmd) {
     "Comandos internos:\n"
     " -help: es este mensaje :) \n -exit: sale de la consola (porfavor no lo hagas :c )\n "
     "-cd: cambia de directorio, usando path relativo o absoluto (ej: /home/USUARIO/Documentos/)\n "
-    "-color: cambia la paleta de colores. Usar 'color' para ver la lista. \n");
+    "-color: cambia la paleta de colores. Usar 'color' para ver la lista de opciones. \n");
 }
 
 static void run_exit(scommand cmd)  {
