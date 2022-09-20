@@ -73,6 +73,11 @@ static void color_change(scommand cmd) {
             strcpy(COLOR_HOST,"\033[38;2;255;255;000m"); 
             strcpy(COLOR_PATH,"\033[38;2;000;000;111m");
         }
+        else if(strcmp(palet, "6") == 0){ 
+            strcpy(COLOR_TEXT,"\033[38;2;237;242;244m");
+            strcpy(COLOR_HOST,"\033[38;2;224;122;95m"); 
+            strcpy(COLOR_PATH,"\033[38;2;129;178;154m");           
+        }
         else {  /* Si el argumento de paleta no es 0,1,2 se da un aviso. */
             printf("Paleta invalida.\n Paletas disponibles del 0 al 5\n");
         }
@@ -86,7 +91,8 @@ static void color_change(scommand cmd) {
         "2 : invierno gris\n"
         "3 : naranjita\n"
         "4 : berenjena\n"
-        "5 : bocaaaaaaa\n");
+        "5 : bocaaaaaaa\n"
+        "6 : porteña\n");
     }
 
 }
