@@ -68,6 +68,11 @@ static void color_change(scommand cmd) {
             strcpy(COLOR_HOST,"\033[38;2;250;162;253m"); 
             strcpy(COLOR_PATH,"\033[38;2;180;132;182m");
         }
+        else if (strcmp(palet, "5") == 0) { /*si es 5, se usa la paleta de boquita*/
+            strcpy(COLOR_TEXT,"\033[38;2;000;000;111m");
+            strcpy(COLOR_HOST,"\033[38;2;255;255;000m"); 
+            strcpy(COLOR_PATH,"\033[38;2;000;000;111m");
+        }
         else {  /* Si el argumento de paleta no es 0,1,2 se da un aviso. */
             printf("Paleta invalida.\n Paletas disponibles del 0 al 6\n");
         }
